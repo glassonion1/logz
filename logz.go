@@ -1,9 +1,3 @@
-/*
-Package logz provides the structured log.
-Example:
-	ctx := r.Context() // r is *http.Request
-	logz.Infof(ctx, "info log. requestURL: %s", r.URL.String())
-*/
 package logz
 
 import (

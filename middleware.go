@@ -6,6 +6,7 @@ import (
 	"github.com/glassonion1/logz/internal/tracer"
 )
 
+// HTTPMiddleware is middleware for HTTP handler
 func HTTPMiddleware(label string) func(http.Handler) http.Handler {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
