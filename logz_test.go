@@ -13,10 +13,25 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestLogzInfof(t *testing.T) {
+/*
+Tests logz functions.
+The log format is below.
+{
+    "severity":"200",
+    "message":"writes info log",
+    "time":"2020-12-31T23:59:59.999999999+09:00",
+    "logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000",
+    "logging.googleapis.com/spanId":"0000000000000000",
+    "jsonPayload":null
+}
+*/
+func TestLogz(t *testing.T) {
+
+	ctx := context.Background()
 
 	now := time.Date(2020, 12, 31, 23, 59, 59, 999999999, time.Local)
 	logz.SetNow(now)
+	logz.SetProjectID("test")
 
 	// Evacuates the stdout
 	orgStdout := os.Stdout
@@ -29,7 +44,7 @@ func TestLogzInfof(t *testing.T) {
 		os.Stdout = w
 
 		// Tests the function
-		logz.Infof(context.Background(), "writes %s log", "info")
+		logz.Infof(ctx, "writes %s log", "info")
 
 		w.Close()
 
@@ -39,7 +54,7 @@ func TestLogzInfof(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"200","message":"writes info log","time":"2020-12-31T23:59:59.999999999+09:00","logging.googleapis.com/trace":"","logging.googleapis.com/spanId":"","jsonPayload":null}`
+		expected := `{"severity":"200","message":"writes info log","time":"2020-12-31T23:59:59.999999999+09:00","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","jsonPayload":null}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stdout
@@ -54,7 +69,7 @@ func TestLogzInfof(t *testing.T) {
 		os.Stdout = w
 
 		// Tests the function
-		logz.Warningf(context.Background(), "writes %s log", "warning")
+		logz.Warningf(ctx, "writes %s log", "warning")
 
 		w.Close()
 
@@ -64,7 +79,7 @@ func TestLogzInfof(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"400","message":"writes warning log","time":"2020-12-31T23:59:59.999999999+09:00","logging.googleapis.com/trace":"","logging.googleapis.com/spanId":"","jsonPayload":null}`
+		expected := `{"severity":"400","message":"writes warning log","time":"2020-12-31T23:59:59.999999999+09:00","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","jsonPayload":null}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stdout
@@ -79,7 +94,7 @@ func TestLogzInfof(t *testing.T) {
 		os.Stdout = w
 
 		// Tests the function
-		logz.Errorf(context.Background(), "writes %s log", "error")
+		logz.Errorf(ctx, "writes %s log", "error")
 
 		w.Close()
 
@@ -89,7 +104,7 @@ func TestLogzInfof(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"500","message":"writes error log","time":"2020-12-31T23:59:59.999999999+09:00","logging.googleapis.com/trace":"","logging.googleapis.com/spanId":"","jsonPayload":null}`
+		expected := `{"severity":"500","message":"writes error log","time":"2020-12-31T23:59:59.999999999+09:00","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","jsonPayload":null}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stdout
@@ -104,7 +119,7 @@ func TestLogzInfof(t *testing.T) {
 		os.Stdout = w
 
 		// Tests the function
-		logz.Criticalf(context.Background(), "writes %s log", "critical")
+		logz.Criticalf(ctx, "writes %s log", "critical")
 
 		w.Close()
 
@@ -114,7 +129,7 @@ func TestLogzInfof(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"600","message":"writes critical log","time":"2020-12-31T23:59:59.999999999+09:00","logging.googleapis.com/trace":"","logging.googleapis.com/spanId":"","jsonPayload":null}`
+		expected := `{"severity":"600","message":"writes critical log","time":"2020-12-31T23:59:59.999999999+09:00","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","jsonPayload":null}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stdout

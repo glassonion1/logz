@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/glassonion1/logz/internal/severity"
+	"github.com/glassonion1/logz/internal/tracer"
 )
 
 var NowFunc = time.Now
@@ -34,19 +35,34 @@ type HttpRequest struct {
 	ResponseSize  string `json:"responseSize"`
 }
 
+// Looger is for GCP
 type Logger struct {
+	ProjectID string
 }
 
-func (l *Logger) WriteLog(ctx context.Context, severity severity.Severity, format string, a ...interface{}) {
-	// TODO: gets the trace and spanId
+// New creates an Looger instance
+func New() *Logger {
+	// In case of App Engine, the value can be obtained.
+	// Otherwise, it is an empty string.
+	projectID := os.Getenv("GOOGLE_CLOUD_PROJECT")
+	return &Logger{
+		ProjectID: projectID,
+	}
+}
 
+// WriteLog writes a log to stdout
+func (l *Logger) WriteLog(ctx context.Context, severity severity.Severity, format string, a ...interface{}) {
+	// Gets the traceID and spanID
+	traceID, spanID := tracer.TraceIDAndSpanID(ctx)
+
+	trace := fmt.Sprintf("projects/%s/traces/%s", l.ProjectID, traceID)
 	msg := fmt.Sprintf(format, a...)
 	ety := &LogEntry{
 		Severity: severity,
 		Message:  msg,
 		Time:     NowFunc(),
-		Trace:    "",
-		SpanID:   "",
+		Trace:    trace,
+		SpanID:   spanID,
 	}
 
 	if err := json.NewEncoder(os.Stdout).Encode(ety); err != nil {

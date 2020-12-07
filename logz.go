@@ -13,7 +13,12 @@ import (
 	"github.com/glassonion1/logz/internal/severity"
 )
 
-var std = &logger.Logger{}
+var std = logger.New()
+
+// SetProjectID sets project id to the logger
+func SetProjectID(pID string) {
+	std.ProjectID = pID
+}
 
 // Debugf writes debug log to the stdout
 func Debugf(ctx context.Context, format string, a ...interface{}) {
