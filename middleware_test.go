@@ -6,30 +6,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/stdout"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-
 	"github.com/glassonion1/logz"
 	"github.com/glassonion1/logz/internal/tracer"
 )
 
 func TestHTTPMiddleware(t *testing.T) {
 
-	// Sets the trace exporter for stdout
-	exporter, err := stdout.NewExporter([]stdout.Option{
-		stdout.WithQuantiles([]float64{0.5, 0.9, 0.99}),
-		stdout.WithPrettyPrint(),
-	}...)
-	if err != nil {
-		t.Fatalf("failed to initialize stdout export pipeline: %v", err)
+	if err := logz.InitStdoutTracer(); err != nil {
+		t.Fatalf("failed to init tracer: %v", err)
 	}
-
-	bsp := sdktrace.NewBatchSpanProcessor(exporter)
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(bsp))
-	defer func() { _ = tp.Shutdown(context.Background()) }()
-
-	otel.SetTracerProvider(tp)
 
 	t.Run("Tests the middleware", func(t *testing.T) {
 		defer func() {
@@ -37,7 +22,21 @@ func TestHTTPMiddleware(t *testing.T) {
 		}()
 
 		mux := http.NewServeMux()
-		mux.Handle("/test", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mux.Handle("/test1", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			logz.Infof(ctx, "write %s log", "info")
+
+			traceID, spanID := tracer.TraceIDAndSpanID(ctx)
+
+			if traceID == "00000000000000000000000000000000" {
+				t.Error("trace id is zero value")
+			}
+			if spanID == "0000000000000000" {
+				t.Error("span id is zero value")
+			}
+		}))
+
+		mux.Handle("/test2", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 			logz.Infof(ctx, "write %s log", "info")
 
@@ -65,9 +64,13 @@ func TestHTTPMiddleware(t *testing.T) {
 		}))
 
 		mid := logz.HTTPMiddleware("test/component")(mux)
-		req := httptest.NewRequest(http.MethodGet, "/test", nil)
-		rec := httptest.NewRecorder()
-		mid.ServeHTTP(rec, req)
+		req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
+		rec1 := httptest.NewRecorder()
+		mid.ServeHTTP(rec1, req1)
+
+		req2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
+		rec2 := httptest.NewRecorder()
+		mid.ServeHTTP(rec2, req2)
 	})
 
 }
