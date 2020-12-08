@@ -3,7 +3,7 @@
 [![Godoc](https://img.shields.io/badge/godoc-reference-blue)](https://godoc.org/github.com/glassonion1/logz)
 [![GitHub license](https://img.shields.io/github/license/glassonion1/logz)](https://github.com/glassonion1/logz/blob/main/LICENSE)
 
-Package logz provides the structured log with the OpenTelemetry([OpenTelemetry](https://opentelemetry.io)).  
+Package logz provides the structured log with the OpenTelemetry([https://opentelemetry.io](https://opentelemetry.io)).  
 This is for Google Cloud Logging (formerly known as Stackdriver).
 
 ## Install
