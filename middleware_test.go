@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	cloudtrace "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	"github.com/glassonion1/logz"
 	"github.com/glassonion1/logz/internal/tracer"
 	"github.com/googleinterns/cloud-operations-api-mock/cloudmock"
@@ -82,10 +81,11 @@ func TestHTTPMiddlewareWithCloudTracer(t *testing.T) {
 
 	mock := cloudmock.NewCloudMock()
 	defer mock.Shutdown()
-	clientOpt := []option.ClientOption{option.WithGRPCConn(mock.ClientConn())}
-	opt := cloudtrace.WithTraceClientOptions(clientOpt)
+	clientOpts := []option.ClientOption{
+		option.WithGRPCConn(mock.ClientConn()),
+	}
 
-	if err := logz.InitCloudTracer("project_id", opt); err != nil {
+	if err := logz.InitCloudTracer("project_id", clientOpts...); err != nil {
 		t.Fatalf("failed to init tracer: %v", err)
 	}
 

@@ -5,6 +5,7 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/stdout"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"google.golang.org/api/option"
 )
 
 func InitStdoutTracer() error {
@@ -27,13 +28,16 @@ func InitStdoutTracer() error {
 	return nil
 }
 
-func InitCloudTracer(projectID string, opts ...cloudtrace.Option) error {
+func InitCloudTracer(projectID string, opts ...option.ClientOption) error {
 
-	opts = append(opts, cloudtrace.WithProjectID(projectID))
+	traceOpts := []cloudtrace.Option{
+		cloudtrace.WithTraceClientOptions(opts),
+		cloudtrace.WithProjectID(projectID),
+	}
 
 	// Create cloud tracer exporter to be able to retrieve
 	// the collected spans.
-	exporter, err := cloudtrace.NewExporter(opts...)
+	exporter, err := cloudtrace.NewExporter(traceOpts...)
 	if err != nil {
 		return err
 	}
