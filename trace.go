@@ -1,12 +1,10 @@
 package logz
 
 import (
+	cloudtrace "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/stdout"
-	"go.opentelemetry.io/otel/propagation"
-	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	"go.opentelemetry.io/otel/semconv"
 )
 
 func InitStdoutTracer() error {
@@ -23,13 +21,31 @@ func InitStdoutTracer() error {
 	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithConfig(config),
 		sdktrace.WithSyncer(exporter),
-		sdktrace.WithResource(resource.NewWithAttributes(semconv.ServiceNameKey.String("ExampleService"))),
 	)
+	otel.SetTracerProvider(tp)
+
+	return nil
+}
+
+func InitCloudTracer(projectID string, opts ...cloudtrace.Option) error {
+
+	opts = append(opts, cloudtrace.WithProjectID(projectID))
+
+	// Create cloud tracer exporter to be able to retrieve
+	// the collected spans.
+	exporter, err := cloudtrace.NewExporter(opts...)
 	if err != nil {
 		return err
 	}
+
+	config := sdktrace.Config{
+		DefaultSampler: sdktrace.AlwaysSample(),
+	}
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithConfig(config),
+		sdktrace.WithSyncer(exporter),
+	)
 	otel.SetTracerProvider(tp)
-	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 
 	return nil
 }

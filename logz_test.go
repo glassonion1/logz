@@ -49,7 +49,9 @@ func TestLogz(t *testing.T) {
 		w.Close()
 
 		var buf bytes.Buffer
-		buf.ReadFrom(r)
+		if _, err := buf.ReadFrom(r); err != nil {
+			t.Fatalf("failed to read buf: %v", err)
+		}
 
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
@@ -74,7 +76,9 @@ func TestLogz(t *testing.T) {
 		w.Close()
 
 		var buf bytes.Buffer
-		buf.ReadFrom(r)
+		if _, err := buf.ReadFrom(r); err != nil {
+			t.Fatalf("failed to read buf: %v", err)
+		}
 
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
@@ -99,7 +103,9 @@ func TestLogz(t *testing.T) {
 		w.Close()
 
 		var buf bytes.Buffer
-		buf.ReadFrom(r)
+		if _, err := buf.ReadFrom(r); err != nil {
+			t.Fatalf("failed to read buf: %v", err)
+		}
 
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
@@ -124,7 +130,9 @@ func TestLogz(t *testing.T) {
 		w.Close()
 
 		var buf bytes.Buffer
-		buf.ReadFrom(r)
+		if _, err := buf.ReadFrom(r); err != nil {
+			t.Fatalf("failed to read buf: %v", err)
+		}
 
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
