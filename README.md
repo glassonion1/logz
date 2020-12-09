@@ -22,6 +22,11 @@ mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     logz.Infof(ctx, "logging...")
 })
 
+logz.SetProjectID("your project id")
+if err := logz.InitCloudTracer(); err != nil {
+    // TODO: hanlde error...
+}
+
 h := logz.HTTPMiddleware("tracer name")(mux)
 
 log.Fatal(http.ListenAndServe(":8080", h))
