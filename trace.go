@@ -4,8 +4,11 @@ import (
 	cloudtrace "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/stdout"
+	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"google.golang.org/api/option"
+
+	logzpropagation "github.com/glassonion1/logz/internal/propagation"
 )
 
 func InitStdoutTracer() error {
@@ -24,6 +27,7 @@ func InitStdoutTracer() error {
 		sdktrace.WithSyncer(exporter),
 	)
 	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}, logzpropagation.HTTPFormat{}))
 
 	return nil
 }
@@ -50,6 +54,7 @@ func InitCloudTracer(projectID string, opts ...option.ClientOption) error {
 		sdktrace.WithSyncer(exporter),
 	)
 	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}, logzpropagation.HTTPFormat{}))
 
 	return nil
 }
