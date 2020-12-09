@@ -3,15 +3,16 @@ package logz
 import (
 	"context"
 
+	"github.com/glassonion1/logz/internal/config"
 	"github.com/glassonion1/logz/internal/logger"
 	"github.com/glassonion1/logz/internal/severity"
 )
 
-var std = logger.New()
+var std = &logger.Logger{}
 
 // SetProjectID sets project id to the logger
 func SetProjectID(pID string) {
-	std.ProjectID = pID
+	config.ProjectID = pID
 }
 
 // Debugf writes debug log to the stdout

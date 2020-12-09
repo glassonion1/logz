@@ -8,6 +8,7 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"google.golang.org/api/option"
 
+	"github.com/glassonion1/logz/internal/config"
 	logzpropagation "github.com/glassonion1/logz/internal/propagation"
 )
 
@@ -32,11 +33,11 @@ func InitStdoutTracer() error {
 	return nil
 }
 
-func InitCloudTracer(projectID string, opts ...option.ClientOption) error {
+func InitCloudTracer(opts ...option.ClientOption) error {
 
 	traceOpts := []cloudtrace.Option{
 		cloudtrace.WithTraceClientOptions(opts),
-		cloudtrace.WithProjectID(projectID),
+		cloudtrace.WithProjectID(config.ProjectID),
 	}
 
 	// Create cloud tracer exporter to be able to retrieve

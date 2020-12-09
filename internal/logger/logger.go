@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/glassonion1/logz/internal/config"
 	"github.com/glassonion1/logz/internal/severity"
 	"github.com/glassonion1/logz/internal/tracer"
 )
@@ -37,17 +38,6 @@ type HttpRequest struct {
 
 // Looger is for GCP
 type Logger struct {
-	ProjectID string
-}
-
-// New creates an Looger instance
-func New() *Logger {
-	// In case of App Engine, the value can be obtained.
-	// Otherwise, it is an empty string.
-	projectID := os.Getenv("GOOGLE_CLOUD_PROJECT")
-	return &Logger{
-		ProjectID: projectID,
-	}
 }
 
 // WriteLog writes a log to stdout
@@ -55,7 +45,7 @@ func (l *Logger) WriteLog(ctx context.Context, severity severity.Severity, forma
 	// Gets the traceID and spanID
 	traceID, spanID := tracer.TraceIDAndSpanID(ctx)
 
-	trace := fmt.Sprintf("projects/%s/traces/%s", l.ProjectID, traceID)
+	trace := fmt.Sprintf("projects/%s/traces/%s", config.ProjectID, traceID)
 	msg := fmt.Sprintf(format, a...)
 	ety := &LogEntry{
 		Severity: severity,
