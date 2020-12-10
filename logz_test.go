@@ -17,12 +17,11 @@ import (
 Tests logz functions.
 The log format is below.
 {
-    "severity":"200",
+    "severity":"INFO",
     "message":"writes info log",
     "time":"2020-12-31T23:59:59.999999999+09:00",
     "logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000",
-    "logging.googleapis.com/spanId":"0000000000000000",
-    "jsonPayload":null
+    "logging.googleapis.com/spanId":"0000000000000000"
 }
 */
 func TestLogz(t *testing.T) {
@@ -56,7 +55,7 @@ func TestLogz(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"200","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","jsonPayload":null}`
+		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000"}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stdout
@@ -83,7 +82,7 @@ func TestLogz(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"400","message":"writes warning log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","jsonPayload":null}`
+		expected := `{"severity":"WARNING","message":"writes warning log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000"}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stdout
@@ -110,7 +109,7 @@ func TestLogz(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"500","message":"writes error log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","jsonPayload":null}`
+		expected := `{"severity":"ERROR","message":"writes error log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000"}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stdout
@@ -137,7 +136,7 @@ func TestLogz(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"600","message":"writes critical log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","jsonPayload":null}`
+		expected := `{"severity":"CRITICAL","message":"writes critical log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000"}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stdout

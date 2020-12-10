@@ -15,13 +15,12 @@ import (
 var NowFunc = time.Now
 
 type LogEntry struct {
-	Severity    severity.Severity `json:"severity,string"`
-	Message     string            `json:"message"`
-	Time        time.Time         `json:"time"`
-	Trace       string            `json:"logging.googleapis.com/trace"`
-	SpanID      string            `json:"logging.googleapis.com/spanId"`
-	JSONPayload interface{}       `json:"jsonPayload"`
-	HTTPRequest *HttpRequest      `json:"httpRequest,omitempty"`
+	Severity    string       `json:"severity"`
+	Message     string       `json:"message"`
+	Time        time.Time    `json:"time"`
+	Trace       string       `json:"logging.googleapis.com/trace"`
+	SpanID      string       `json:"logging.googleapis.com/spanId"`
+	HTTPRequest *HttpRequest `json:"httpRequest,omitempty"`
 }
 
 type HttpRequest struct {
@@ -48,7 +47,7 @@ func (l *Logger) WriteLog(ctx context.Context, severity severity.Severity, forma
 	trace := fmt.Sprintf("projects/%s/traces/%s", config.ProjectID, sc.TraceID)
 	msg := fmt.Sprintf(format, a...)
 	ety := &LogEntry{
-		Severity: severity,
+		Severity: severity.String(),
 		Message:  msg,
 		Time:     NowFunc(),
 		Trace:    trace,

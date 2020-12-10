@@ -12,6 +12,13 @@ import (
 	logzpropagation "github.com/glassonion1/logz/propagation"
 )
 
+func InitTracer() error {
+	tp := sdktrace.NewTracerProvider()
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(logzpropagation.HTTPFormat{})
+	return nil
+}
+
 // InitStdoutTracer initializes tracer of OpenTelemetry, that is for stdout
 func InitStdoutTracer() error {
 	// Create stdout exporter to be able to retrieve

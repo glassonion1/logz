@@ -14,3 +14,20 @@ const (
 	Alert                           // 700
 	Emergency                       // 800
 )
+
+var severityMap = map[Severity]string{
+	Default:   "DEFAULT",
+	Debug:     "DEBUG",
+	Info:      "INFO",
+	Notice:    "NOTICE",
+	Warning:   "WARNING",
+	Error:     "ERROR",
+	Critical:  "CRITICAL",
+	Alert:     "ALERT",
+	Emergency: "EMERGENCY",
+}
+
+// String returns text representation for the severity
+func (s Severity) String() string {
+	return severityMap[s]
+}
