@@ -10,6 +10,7 @@ import (
 	"github.com/glassonion1/logz/internal/config"
 	"github.com/glassonion1/logz/internal/severity"
 	"github.com/glassonion1/logz/internal/spancontext"
+	"github.com/google/uuid"
 )
 
 var NowFunc = time.Now
@@ -21,6 +22,14 @@ type LogEntry struct {
 	Trace       string       `json:"logging.googleapis.com/trace"`
 	SpanID      string       `json:"logging.googleapis.com/spanId"`
 	HTTPRequest *HttpRequest `json:"httpRequest,omitempty"`
+
+	// InsertID is a unique ID for the log entry. If you provide this field,
+	// the logging service considers other log entries in the same log with the
+	// same ID as duplicates which can be removed. If omitted, the logging
+	// service will generate a unique ID for this log entry. Note that because
+	// this client retries RPCs automatically, it is possible (though unlikely)
+	// that an Entry without an InsertID will be written more than once.
+	InsertID string `json:"insertId,omitempty"`
 }
 
 type HttpRequest struct {
@@ -45,6 +54,7 @@ func (l *Logger) WriteLog(ctx context.Context, severity severity.Severity, forma
 	sc := spancontext.Extract(ctx)
 
 	trace := fmt.Sprintf("projects/%s/traces/%s", config.ProjectID, sc.TraceID)
+	id, _ := uuid.NewUUID()
 	msg := fmt.Sprintf(format, a...)
 	ety := &LogEntry{
 		Severity: severity.String(),
@@ -52,6 +62,7 @@ func (l *Logger) WriteLog(ctx context.Context, severity severity.Severity, forma
 		Time:     NowFunc(),
 		Trace:    trace,
 		SpanID:   sc.SpanID,
+		InsertID: id.String(),
 	}
 
 	if err := json.NewEncoder(os.Stdout).Encode(ety); err != nil {

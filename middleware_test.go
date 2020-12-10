@@ -151,13 +151,18 @@ func TestHTTPMiddlewareWithCloudTracer(t *testing.T) {
 
 func TestHTTPMiddlewareRemoteParent(t *testing.T) {
 
-	mock := cloudmock.NewCloudMock()
-	defer mock.Shutdown()
-	clientOpts := []option.ClientOption{
-		option.WithGRPCConn(mock.ClientConn()),
-	}
+	/*
+		mock := cloudmock.NewCloudMock()
+		defer mock.Shutdown()
+		clientOpts := []option.ClientOption{
+			option.WithGRPCConn(mock.ClientConn()),
+		}
 
-	if err := logz.InitCloudTracer(clientOpts...); err != nil {
+		if err := logz.InitCloudTracer(clientOpts...); err != nil {
+			t.Fatalf("failed to init tracer: %v", err)
+		}*/
+
+	if err := logz.InitTracer(); err != nil {
 		t.Fatalf("failed to init tracer: %v", err)
 	}
 

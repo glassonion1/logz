@@ -15,7 +15,7 @@ import (
 func InitTracer() error {
 	tp := sdktrace.NewTracerProvider()
 	otel.SetTracerProvider(tp)
-	otel.SetTextMapPropagator(logzpropagation.HTTPFormat{})
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(logzpropagation.HTTPFormat{}))
 	return nil
 }
 
