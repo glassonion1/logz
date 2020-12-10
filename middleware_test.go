@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/glassonion1/logz"
-	"github.com/glassonion1/logz/internal/tracer"
+	"github.com/glassonion1/logz/internal/spancontext"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleinterns/cloud-operations-api-mock/cloudmock"
 	"google.golang.org/api/option"
@@ -29,12 +29,12 @@ func TestHTTPMiddlewareWithStdoutTracer(t *testing.T) {
 			ctx := r.Context()
 			logz.Infof(ctx, "write %s log", "info")
 
-			traceID, spanID := tracer.TraceIDAndSpanID(ctx)
+			sc := spancontext.Extract(ctx)
 
-			if traceID == "00000000000000000000000000000000" {
+			if sc.TraceID == "00000000000000000000000000000000" {
 				t.Error("trace id is zero value")
 			}
-			if spanID == "0000000000000000" {
+			if sc.SpanID == "0000000000000000" {
 				t.Error("span id is zero value")
 			}
 		}))
@@ -43,12 +43,12 @@ func TestHTTPMiddlewareWithStdoutTracer(t *testing.T) {
 			ctx := r.Context()
 			logz.Infof(ctx, "write %s log", "info")
 
-			traceID, spanID := tracer.TraceIDAndSpanID(ctx)
+			sc := spancontext.Extract(ctx)
 
-			if traceID == "00000000000000000000000000000000" {
+			if sc.TraceID == "00000000000000000000000000000000" {
 				t.Error("trace id is zero value")
 			}
-			if spanID == "0000000000000000" {
+			if sc.SpanID == "0000000000000000" {
 				t.Error("span id is zero value")
 			}
 
@@ -56,11 +56,11 @@ func TestHTTPMiddlewareWithStdoutTracer(t *testing.T) {
 			func(ctx context.Context) {
 				logz.Infof(ctx, "write %s nested log", "info")
 
-				childTraceID, childSpanID := tracer.TraceIDAndSpanID(ctx)
-				if childTraceID != traceID {
+				child := spancontext.Extract(ctx)
+				if child.TraceID != sc.TraceID {
 					t.Error("trace and child trace id are not equal")
 				}
-				if childSpanID != spanID {
+				if child.SpanID != sc.SpanID {
 					t.Error("span and child span id are not equal")
 				}
 			}(ctx)
@@ -100,12 +100,12 @@ func TestHTTPMiddlewareWithCloudTracer(t *testing.T) {
 			ctx := r.Context()
 			logz.Infof(ctx, "write %s log", "info")
 
-			traceID, spanID := tracer.TraceIDAndSpanID(ctx)
+			sc := spancontext.Extract(ctx)
 
-			if traceID == "00000000000000000000000000000000" {
+			if sc.TraceID == "00000000000000000000000000000000" {
 				t.Error("trace id is zero value")
 			}
-			if spanID == "0000000000000000" {
+			if sc.SpanID == "0000000000000000" {
 				t.Error("span id is zero value")
 			}
 		}))
@@ -114,12 +114,12 @@ func TestHTTPMiddlewareWithCloudTracer(t *testing.T) {
 			ctx := r.Context()
 			logz.Infof(ctx, "write %s log", "info")
 
-			traceID, spanID := tracer.TraceIDAndSpanID(ctx)
+			sc := spancontext.Extract(ctx)
 
-			if traceID == "00000000000000000000000000000000" {
+			if sc.TraceID == "00000000000000000000000000000000" {
 				t.Error("trace id is zero value")
 			}
-			if spanID == "0000000000000000" {
+			if sc.SpanID == "0000000000000000" {
 				t.Error("span id is zero value")
 			}
 
@@ -127,11 +127,11 @@ func TestHTTPMiddlewareWithCloudTracer(t *testing.T) {
 			func(ctx context.Context) {
 				logz.Infof(ctx, "write %s nested log", "info")
 
-				childTraceID, childSpanID := tracer.TraceIDAndSpanID(ctx)
-				if childTraceID != traceID {
+				child := spancontext.Extract(ctx)
+				if child.TraceID != sc.TraceID {
 					t.Error("trace and child trace id are not equal")
 				}
-				if childSpanID != spanID {
+				if child.SpanID != sc.SpanID {
 					t.Error("span and child span id are not equal")
 				}
 			}(ctx)
@@ -171,12 +171,12 @@ func TestHTTPMiddlewareRemoteParent(t *testing.T) {
 			ctx := r.Context()
 			logz.Infof(ctx, "write %s log", "info")
 
-			traceID, spanID := tracer.TraceIDAndSpanID(ctx)
+			sc := spancontext.Extract(ctx)
 
-			if diff := cmp.Diff(traceID, "a0d3eee13de6a4bbcf291eb444b94f28"); diff != "" {
+			if diff := cmp.Diff(sc.TraceID, "a0d3eee13de6a4bbcf291eb444b94f28"); diff != "" {
 				t.Errorf("remote and current trace id are missmatch: %v", diff)
 			}
-			if spanID == "0000000000000000" {
+			if sc.SpanID == "0000000000000000" {
 				t.Error("span id is zero value")
 			}
 		}))

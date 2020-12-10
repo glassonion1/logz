@@ -12,6 +12,7 @@ import (
 	logzpropagation "github.com/glassonion1/logz/propagation"
 )
 
+// InitStdoutTracer initializes tracer of OpenTelemetry, that is for stdout
 func InitStdoutTracer() error {
 	// Create stdout exporter to be able to retrieve
 	// the collected spans.
@@ -33,6 +34,7 @@ func InitStdoutTracer() error {
 	return nil
 }
 
+// InitCloudTracer initializes tracer of OpenTelemetry, that is for Cloud Logging(formerly known as Stackdriver Logging)
 func InitCloudTracer(opts ...option.ClientOption) error {
 
 	traceOpts := []cloudtrace.Option{

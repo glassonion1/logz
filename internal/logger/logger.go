@@ -9,7 +9,7 @@ import (
 
 	"github.com/glassonion1/logz/internal/config"
 	"github.com/glassonion1/logz/internal/severity"
-	"github.com/glassonion1/logz/internal/tracer"
+	"github.com/glassonion1/logz/internal/spancontext"
 )
 
 var NowFunc = time.Now
@@ -43,16 +43,16 @@ type Logger struct {
 // WriteLog writes a log to stdout
 func (l *Logger) WriteLog(ctx context.Context, severity severity.Severity, format string, a ...interface{}) {
 	// Gets the traceID and spanID
-	traceID, spanID := tracer.TraceIDAndSpanID(ctx)
+	sc := spancontext.Extract(ctx)
 
-	trace := fmt.Sprintf("projects/%s/traces/%s", config.ProjectID, traceID)
+	trace := fmt.Sprintf("projects/%s/traces/%s", config.ProjectID, sc.TraceID)
 	msg := fmt.Sprintf(format, a...)
 	ety := &LogEntry{
 		Severity: severity,
 		Message:  msg,
 		Time:     NowFunc(),
 		Trace:    trace,
-		SpanID:   spanID,
+		SpanID:   sc.SpanID,
 	}
 
 	if err := json.NewEncoder(os.Stdout).Encode(ety); err != nil {
