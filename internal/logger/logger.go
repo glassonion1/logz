@@ -29,7 +29,7 @@ type LogEntry struct {
 	// service will generate a unique ID for this log entry. Note that because
 	// this client retries RPCs automatically, it is possible (though unlikely)
 	// that an Entry without an InsertID will be written more than once.
-	InsertID string `json:"insertId,omitempty"`
+	InsertID string `json:"logging.googleapis.com/insertId,omitempty"`
 }
 
 type HttpRequest struct {

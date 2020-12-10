@@ -63,7 +63,7 @@ func TestLogz(t *testing.T) {
 			t.Error("failed log info test")
 		}
 
-		if !strings.Contains(got, `"insertId":`) {
+		if !strings.Contains(got, `"logging.googleapis.com/insertId":`) {
 			// Restores the stdout
 			os.Stdout = orgStdout
 			t.Error("failed log info test")
