@@ -9,7 +9,7 @@ import (
 	"google.golang.org/api/option"
 
 	"github.com/glassonion1/logz/internal/config"
-	logzpropagation "github.com/glassonion1/logz/internal/propagation"
+	logzpropagation "github.com/glassonion1/logz/propagation"
 )
 
 func InitStdoutTracer() error {

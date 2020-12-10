@@ -5,10 +5,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/glassonion1/logz/internal/propagation"
 	"github.com/google/go-cmp/cmp"
 	"go.opentelemetry.io/otel/oteltest"
 	"go.opentelemetry.io/otel/trace"
+
+	"github.com/glassonion1/logz/propagation"
 )
 
 func TestHTTPFormatInject(t *testing.T) {
