@@ -2,10 +2,11 @@
 
 ![CI for Pull Request](https://github.com/glassonion1/logz/workflows/CI%20for%20Pull%20Request/badge.svg)
 [![Godoc](https://img.shields.io/badge/godoc-reference-blue)](https://godoc.org/github.com/glassonion1/logz)
+[![Go Report Card](https://goreportcard.com/badge/github.com/glassonion1/logz)](https://goreportcard.com/report/github.com/glassonion1/logz)
 [![GitHub license](https://img.shields.io/github/license/glassonion1/logz)](https://github.com/glassonion1/logz/blob/main/LICENSE)
 
 Package logz provides the structured and hierarchized log with the OpenTelemetry([https://opentelemetry.io](https://opentelemetry.io)).  
-This is for Google Cloud Logging (formerly known as Stackdriver).  
+This is for Google Cloud Logging (formerly known as Stackdriver Logging).  
 The logz supports to App Engine and Cloud Run and GKE.
 
 ## Install
@@ -35,3 +36,7 @@ log.Fatal(http.ListenAndServe(":8080", h))
 ## Examples
 See this sample projects for logz detailed usage  
 https://github.com/glassonion1/logz/tree/main/example
+
+## How logs are grouped
+The logz leverages the grouping feature of GCP Cloud Logging. See following references for more details.
+* https://godoc.org/cloud.google.com/go/logging#hdr-Grouping_Logs_by_Request
