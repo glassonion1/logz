@@ -12,7 +12,7 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
-var std = &logger.Logger{}
+var l = &logger.Logger{}
 
 // SetProjectID sets gcp project id to the logger
 func SetProjectID(projectID string) {
@@ -21,27 +21,27 @@ func SetProjectID(projectID string) {
 
 // Debugf writes debug log to the stdout
 func Debugf(ctx context.Context, format string, a ...interface{}) {
-	std.WriteLog(ctx, severity.Default, format, a...)
+	l.WriteApplicationLog(ctx, severity.Default, format, a...)
 }
 
 // Infof writes info log to the stdout
 func Infof(ctx context.Context, format string, a ...interface{}) {
-	std.WriteLog(ctx, severity.Info, format, a...)
+	l.WriteApplicationLog(ctx, severity.Info, format, a...)
 }
 
 // Warningf writes warning log to the stdout
 func Warningf(ctx context.Context, format string, a ...interface{}) {
-	std.WriteLog(ctx, severity.Warning, format, a...)
+	l.WriteApplicationLog(ctx, severity.Warning, format, a...)
 }
 
 // Errorf writes error log to the stdout
 func Errorf(ctx context.Context, format string, a ...interface{}) {
-	std.WriteLog(ctx, severity.Error, format, a...)
+	l.WriteApplicationLog(ctx, severity.Error, format, a...)
 }
 
 // Criticalf writes critical log to the stdout
 func Criticalf(ctx context.Context, format string, a ...interface{}) {
-	std.WriteLog(ctx, severity.Critical, format, a...)
+	l.WriteApplicationLog(ctx, severity.Critical, format, a...)
 }
 
 // InitTracer initializes OpenTelemetry tracer

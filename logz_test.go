@@ -10,18 +10,24 @@ import (
 	"context"
 
 	"github.com/glassonion1/logz"
+	"github.com/google/go-cmp/cmp"
 )
 
 /*
 Tests logz functions.
 The log format is below.
 {
-    "severity":"INFO",
-    "message":"writes info log",
-    "time":"2020-12-31T23:59:59.999999999+09:00",
-    "logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000",
-    "logging.googleapis.com/spanId":"0000000000000000",
-    "insertId":"41d8c99e-3ac9-11eb-938c-acde48001122"
+  "severity":"INFO",
+  "message":"writes info log",
+  "time":"2020-12-31T23:59:59.999999999Z",
+  "logging.googleapis.com/sourceLocation":{
+    "file":"logz_test.go",
+    "line":"46",
+    "function":"github.com/glassonion1/logz_test.TestLogz.func2"
+  },
+  "logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000",
+  "logging.googleapis.com/spanId":"0000000000000000",
+  "logging.googleapis.com/trace_sampled":false
 }
 */
 func TestLogz(t *testing.T) {
@@ -55,18 +61,12 @@ func TestLogz(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000"`
+		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logz_test.go","line":"46","function":"github.com/glassonion1/logz_test.TestLogz.func2"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
 
-		if !strings.Contains(got, expected) {
+		if diff := cmp.Diff(got, expected); diff != diff {
 			// Restores the stdout
 			os.Stdout = orgStdout
-			t.Error("failed log info test")
-		}
-
-		if !strings.Contains(got, `"logging.googleapis.com/insertId":`) {
-			// Restores the stdout
-			os.Stdout = orgStdout
-			t.Error("failed log info test")
+			t.Errorf("failed log info test: %v", diff)
 		}
 	})
 }
