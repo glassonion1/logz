@@ -35,3 +35,7 @@ log.Fatal(http.ListenAndServe(":8080", h))
 ## Examples
 See this sample projects for logz detailed usage  
 https://github.com/glassonion1/logz/tree/main/example
+
+## How logs are grouped
+The logz leverages the grouping feature of GCP Cloud Logging(a.ka. Stackdriver). See following references for more details.
+* https://godoc.org/cloud.google.com/go/logging#hdr-Grouping_Logs_by_Request
