@@ -61,9 +61,9 @@ func TestLogz(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logz_test.go","line":"46","function":"github.com/glassonion1/logz_test.TestLogz.func2"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
+		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logz_test.go","line":"52","function":"github.com/glassonion1/logz_test.TestLogz.func2"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
 
-		if diff := cmp.Diff(got, expected); diff != diff {
+		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stdout
 			os.Stdout = orgStdout
 			t.Errorf("failed log info test: %v", diff)
