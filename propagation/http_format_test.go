@@ -23,7 +23,7 @@ func TestHTTPFormatInject(t *testing.T) {
 	hf := propagation.HTTPFormat{}
 	hf.Inject(ctx, &req1.Header)
 
-	want := "00000000000000020000000000000000/0000000000000002;o=0"
+	want := "00000000000000020000000000000000/2;o=0"
 	got := req1.Header.Get("X-Cloud-Trace-Context")
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("failed to inject test: %v", diff)
@@ -33,7 +33,7 @@ func TestHTTPFormatInject(t *testing.T) {
 func TestHTTPFormatExtract(t *testing.T) {
 
 	req1 := httptest.NewRequest("GET", "http://example.com", nil)
-	req1.Header.Set("X-Cloud-Trace-Context", "a0d3eee13de6a4bbcf291eb444b94f28/913411593c9338c5;o=1")
+	req1.Header.Set("X-Cloud-Trace-Context", "a0d3eee13de6a4bbcf291eb444b94f28/999;o=1")
 
 	// Tests the extract funcation
 	hf := propagation.HTTPFormat{}
@@ -45,7 +45,7 @@ func TestHTTPFormatExtract(t *testing.T) {
 		t.Errorf("failed to traceid test: %v", diff)
 	}
 
-	if diff := cmp.Diff(sc.SpanID.String(), "913411593c9338c5"); diff != "" {
+	if diff := cmp.Diff(sc.SpanID.String(), "00000000000003e7"); diff != "" {
 		t.Errorf("failed to spanid test: %v", diff)
 	}
 

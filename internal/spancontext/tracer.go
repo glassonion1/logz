@@ -17,6 +17,6 @@ func Extract(ctx context.Context) SpanContext {
 	return SpanContext{
 		TraceID:      spanCtx.TraceID.String(),
 		SpanID:       spanCtx.SpanID.String(),
-		TraceSampled: spanCtx.TraceFlags == trace.FlagsSampled,
+		TraceSampled: spanCtx.IsSampled(),
 	}
 }

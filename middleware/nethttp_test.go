@@ -103,7 +103,7 @@ func TestHTTPMiddlewareRemoteParent(t *testing.T) {
 		req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
 
 		// Simulates managed cloud service like App Engine or Cloud Run, that sets HTTP header of X-Cloud-Trace-Context
-		req1.Header.Set("X-Cloud-Trace-Context", "a0d3eee13de6a4bbcf291eb444b94f28/913411593c9338c5;o=1")
+		req1.Header.Set("X-Cloud-Trace-Context", "a0d3eee13de6a4bbcf291eb444b94f28/1;o=1")
 
 		rec1 := httptest.NewRecorder()
 		mid.ServeHTTP(rec1, req1)

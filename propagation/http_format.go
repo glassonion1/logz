@@ -2,8 +2,10 @@ package propagation
 
 import (
 	"context"
+	"encoding/binary"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"go.opentelemetry.io/otel/propagation"
@@ -27,7 +29,8 @@ func (hf HTTPFormat) Inject(ctx context.Context, carrier propagation.TextMapCarr
 		return
 	}
 
-	header := fmt.Sprintf("%s/%s;o=%d", sc.TraceID.String(), sc.SpanID.String(), sc.TraceFlags)
+	sid := binary.BigEndian.Uint64(sc.SpanID[:])
+	header := fmt.Sprintf("%s/%d;o=%d", sc.TraceID.String(), sid, sc.TraceFlags)
 	carrier.Set(httpHeader, header)
 }
 
@@ -61,17 +64,16 @@ func extract(h string) (trace.SpanContext, error) {
 	sc.TraceID = traceID
 
 	// Parse the span id field.
+	spanstr := h
 	semicolon := strings.Index(h, `;`)
-	if semicolon == -1 {
-		return sc, errors.New("failed to parse value")
+	if semicolon != -1 {
+		spanstr, h = h[:semicolon], h[semicolon+1:]
 	}
-	sid, h := h[:semicolon], h[semicolon+1:]
-	spanID, err := trace.SpanIDFromHex(sid)
+	sid, err := strconv.ParseUint(spanstr, 10, 64)
 	if err != nil {
 		return sc, fmt.Errorf("failed to parse value: %w", err)
 	}
-
-	sc.SpanID = spanID
+	binary.BigEndian.PutUint64(sc.SpanID[:], sid)
 
 	// Parse the options field, options field is optional.
 	if !strings.HasPrefix(h, "o=") {
