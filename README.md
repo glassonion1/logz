@@ -24,10 +24,14 @@ mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     logz.Infof(ctx, "logging...")
 })
 
-logz.SetProjectID("your project id")
+logz.SetProjectID("your gcp project id")
 logz.InitTracer()
-
+// Sets the middleware
 h := middleware.NetHTTP("tracer name")(mux)
 
 log.Fatal(http.ListenAndServe(":8080", h))
 ```
+
+## Examples
+See this sample projects for logz detailed usage
+https://github.com/glassonion1/logz/tree/main/example
