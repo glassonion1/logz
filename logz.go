@@ -48,5 +48,11 @@ func Criticalf(ctx context.Context, format string, a ...interface{}) {
 func InitTracer() {
 	tp := sdktrace.NewTracerProvider()
 	otel.SetTracerProvider(tp)
-	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(logzpropagation.HTTPFormat{}))
+
+	// Doesn't work properly on App Engine without TraceContext and Baggage
+	props := propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{},
+		propagation.Baggage{},
+		logzpropagation.HTTPFormat{})
+	otel.SetTextMapPropagator(props)
 }
