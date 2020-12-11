@@ -6,13 +6,17 @@ import (
 	"github.com/glassonion1/logz/internal/config"
 	"github.com/glassonion1/logz/internal/logger"
 	"github.com/glassonion1/logz/internal/severity"
+	logzpropagation "github.com/glassonion1/logz/propagation"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 var std = &logger.Logger{}
 
-// SetProjectID sets project id to the logger
-func SetProjectID(pID string) {
-	config.ProjectID = pID
+// SetProjectID sets gcp project id to the logger
+func SetProjectID(projectID string) {
+	config.ProjectID = projectID
 }
 
 // Debugf writes debug log to the stdout
@@ -38,4 +42,11 @@ func Errorf(ctx context.Context, format string, a ...interface{}) {
 // Criticalf writes critical log to the stdout
 func Criticalf(ctx context.Context, format string, a ...interface{}) {
 	std.WriteLog(ctx, severity.Critical, format, a...)
+}
+
+// InitTracer initializes OpenTelemetry tracer
+func InitTracer() {
+	tp := sdktrace.NewTracerProvider()
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(logzpropagation.HTTPFormat{}))
 }

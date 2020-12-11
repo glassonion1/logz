@@ -27,7 +27,7 @@ if err := logz.InitCloudTracer(); err != nil {
     // TODO: hanlde error...
 }
 
-h := logz.HTTPMiddleware("tracer name")(mux)
+h := middleware.NetHTTP("tracer name")(mux)
 
 log.Fatal(http.ListenAndServe(":8080", h))
 ```
