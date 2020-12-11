@@ -2,7 +2,7 @@ package severity
 
 type Severity int
 
-//nolint:varcheck,deadcode,unused
+// Enum for severity
 const (
 	Default   Severity = iota * 100 // 0
 	Debug                           // 100

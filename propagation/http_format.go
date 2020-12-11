@@ -91,6 +91,7 @@ func extract(h string) (trace.SpanContext, error) {
 	return sc, nil
 }
 
+// Fields is propagation keys
 func (hf HTTPFormat) Fields() []string {
 	return []string{httpHeader}
 }

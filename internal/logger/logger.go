@@ -16,6 +16,7 @@ import (
 	"github.com/glassonion1/logz/internal/types"
 )
 
+// NowFunc is a function used in testing instead of time.Now
 var NowFunc = time.Now
 
 const traceFmt = "projects/%s/traces/%s"

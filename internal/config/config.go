@@ -3,6 +3,7 @@ package config
 import "os"
 
 var (
+	// ProjectID is gcp project id
 	ProjectID = ""
 )
 
