@@ -19,13 +19,13 @@ $ go get github.com/glassonion1/logz
 mux := http.NewServeMux()
 mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     ctx := r.Context()
+
+    // Writes info log
     logz.Infof(ctx, "logging...")
 })
 
 logz.SetProjectID("your project id")
-if err := logz.InitCloudTracer(); err != nil {
-    // TODO: hanlde error...
-}
+logz.InitTracer()
 
 h := middleware.NetHTTP("tracer name")(mux)
 

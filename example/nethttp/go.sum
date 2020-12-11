@@ -55,6 +55,8 @@ github.com/felixge/httpsnoop v1.0.1 h1:lvB5Jl89CsZtGIWuTcDM1E/vkVs49/Ml7JJe07l8S
 github.com/felixge/httpsnoop v1.0.1/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/glassonion1/logz v0.1.3 h1:q7oPx2lBaTbP7kLBJTy0dLhEkuNNgN+CfocF22Hvldg=
 github.com/glassonion1/logz v0.1.3/go.mod h1:/tqH3d/OvSvQNCLaPEJpE8S5UZFuGifuP44nvYnizAo=
+github.com/glassonion1/logz v0.2.0 h1:cTXNJDVops2/D/yGZkXxX8f9urak/9Ed6Mt/UhqtYj4=
+github.com/glassonion1/logz v0.2.0/go.mod h1:7l3wpfyfolu7XoPFvgW6X2k1+bn3oYX7gAThyHaHIqc=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20191125211704-12ad95a8df72/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20200222043503-6f7a984d4dc4/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
