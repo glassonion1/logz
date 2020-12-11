@@ -33,5 +33,5 @@ log.Fatal(http.ListenAndServe(":8080", h))
 ```
 
 ## Examples
-See this sample projects for logz detailed usage
+See this sample projects for logz detailed usage  
 https://github.com/glassonion1/logz/tree/main/example
