@@ -2,6 +2,7 @@
 
 ![CI for Pull Request](https://github.com/glassonion1/logz/workflows/CI%20for%20Pull%20Request/badge.svg)
 [![Godoc](https://img.shields.io/badge/godoc-reference-blue)](https://godoc.org/github.com/glassonion1/logz)
+[![Go Report Card](https://goreportcard.com/badge/github.com/glassonion1/logz)](https://goreportcard.com/report/github.com/glassonion1/logz)
 [![GitHub license](https://img.shields.io/github/license/glassonion1/logz)](https://github.com/glassonion1/logz/blob/main/LICENSE)
 
 Package logz provides the structured and hierarchized log with the OpenTelemetry([https://opentelemetry.io](https://opentelemetry.io)).  
