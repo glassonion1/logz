@@ -1,5 +1,5 @@
 # logz for Go 1.11
-This is for migrating `google.golang.org/appengine/log` of Ape Enigne 1st generation.
+This is for migrating `google.golang.org/appengine/log` of Ape Enigne 1st generation.  
 Guaranteed to work on Google App Engine 1st generation of Go 1.11.
 
 ## Install

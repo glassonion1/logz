@@ -9,6 +9,8 @@ Package logz provides the structured and hierarchized log with the OpenTelemetry
 This is for Google Cloud Logging (formerly known as Stackdriver Logging).  
 The logz supports to App Engine and Cloud Run and GKE.
 
+Use [this](https://github.com/glassonion1/logz/tree/main/go111) if your project is App Engine 1st generation.
+
 ## Install
 ```
 $ go get github.com/glassonion1/logz
