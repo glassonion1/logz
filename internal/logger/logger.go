@@ -59,11 +59,11 @@ func (l *Logger) WriteApplicationLog(ctx context.Context, severity severity.Seve
 }
 
 // WriteAccessLog writes a access log to stderr
-func (l *Logger) WriteAccessLog(ctx context.Context, r http.Request) {
+func (l *Logger) WriteAccessLog(ctx context.Context, r http.Request, status, responseSize int, elapsed time.Duration) {
 	// Gets the traceID and spanID
 	sc := spancontext.Extract(ctx)
 
-	req := types.MakeHTTPRequest(r)
+	req := types.MakeHTTPRequest(r, status, responseSize, elapsed)
 
 	trace := fmt.Sprintf(traceFmt, config.ProjectID, sc.TraceID)
 	ety := &types.AccessLog{

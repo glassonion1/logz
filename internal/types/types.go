@@ -50,15 +50,18 @@ type HTTPRequest struct {
 	Protocol                       string `json:"protocol"`
 }
 
-func MakeHTTPRequest(r http.Request) HTTPRequest {
+func MakeHTTPRequest(r http.Request, status, responseSize int, elapsed time.Duration) HTTPRequest {
 	return HTTPRequest{
 		RequestMethod:                  r.Method,
 		RequestURL:                     r.URL.RequestURI(),
 		RequestSize:                    fmt.Sprintf("%d", r.ContentLength),
+		Status:                         status,
+		ResponseSize:                   fmt.Sprintf("%d", responseSize),
 		UserAgent:                      r.UserAgent(),
 		RemoteIP:                       strings.Split(r.RemoteAddr, ":")[0],
 		ServerIP:                       getServerIp(),
 		Referer:                        r.Referer(),
+		Latency:                        fmt.Sprintf("%fs", elapsed.Seconds()),
 		CacheLookup:                    false,
 		CacheHit:                       false,
 		CacheValidatedWithOriginServer: false,
