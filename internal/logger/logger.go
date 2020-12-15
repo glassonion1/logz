@@ -26,7 +26,7 @@ type Logger struct {
 }
 
 // WriteAppLog writes a application log to stdout
-func (l *Logger) WriteApplicationLog(ctx context.Context, severity severity.Severity, format string, a ...interface{}) {
+func (l *Logger) Write(ctx context.Context, severity severity.Severity, format string, a ...interface{}) {
 	// Gets the traceID and spanID
 	sc := spancontext.Extract(ctx)
 
@@ -59,13 +59,10 @@ func (l *Logger) WriteApplicationLog(ctx context.Context, severity severity.Seve
 }
 
 // WriteAccessLog writes a access log to stderr
-func (l *Logger) WriteAccessLog(ctx context.Context, r http.Request, status, responseSize int, elapsed time.Duration) {
-	// Gets the traceID and spanID
-	sc := spancontext.Extract(ctx)
-
+func WriteAccessLog(traceID string, r http.Request, status, responseSize int, elapsed time.Duration) {
 	req := types.MakeHTTPRequest(r, status, responseSize, elapsed)
 
-	trace := fmt.Sprintf(traceFmt, config.ProjectID, sc.TraceID)
+	trace := fmt.Sprintf(traceFmt, config.ProjectID, traceID)
 	ety := &types.AccessLog{
 		Severity:    severity.Default.String(),
 		Time:        NowFunc(),
