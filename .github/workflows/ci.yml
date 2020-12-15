@@ -9,6 +9,15 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: v1.32
+  lint_go111:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.32
+          working-directory: ./go111
 
   unit-test:
     runs-on: ubuntu-latest
@@ -23,3 +32,18 @@ jobs:
           go test -v ./...
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  unit-test_go111:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.11
+      - name: Do the unit tests
+        run: |
+          go test -v ./...
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: ./go111
