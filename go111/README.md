@@ -2,6 +2,8 @@
 This is for migrating `google.golang.org/appengine/log` of Ape Enigne 1st generation.  
 Guaranteed to work on Google App Engine 1st generation of Go 1.11.
 
+![screenshot](https://github.com/glassonion1/logz/blob/main/go111/img/screenshot.png "Cloug Logging")
+
 ## Install
 ```
 $ go get github.com/glassonion1/logz/go111
