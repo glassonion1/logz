@@ -18,6 +18,7 @@ func TestLogz(t *testing.T) {
 	logz.InitTracer()
 
 	t.Run("Tests logz integration", func(t *testing.T) {
+		t.Parallel()
 
 		mux := http.NewServeMux()
 		mux.Handle("/test1", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -78,6 +79,7 @@ func TestLogzRemoteParent(t *testing.T) {
 	logz.InitTracer()
 
 	t.Run("Tests logz integration with remote parent", func(t *testing.T) {
+		t.Parallel()
 
 		mux := http.NewServeMux()
 		mux.Handle("/test1", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

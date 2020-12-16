@@ -26,7 +26,7 @@ func WriteApplicationLog(ctx context.Context, severity severity.Severity, format
 	// Gets the traceID and spanID
 	sc := spancontext.Extract(ctx)
 
-	// gets the source location
+	// Gets the source location
 	var location types.SourceLocation
 	if pc, file, line, ok := runtime.Caller(2); ok {
 		if function := runtime.FuncForPC(pc); function != nil {

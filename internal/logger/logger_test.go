@@ -23,9 +23,9 @@ The format of application log is below
   "message":"writes info log",
   "time":"2020-12-31T23:59:59.999999999Z",
   "logging.googleapis.com/sourceLocation":{
-    "file":"testing.go",
-    "line":"1127",
-    "function":"testing.tRunner"
+    "file":"logger_test.go",
+    "line":"57",
+    "function":"github.com/glassonion1/logz/internal/logger_test.TestLoggerWriteApplicationLog.func3"
   },
   "logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000",
   "logging.googleapis.com/spanId":"0000000000000000",
@@ -52,7 +52,10 @@ func TestLoggerWriteApplicationLog(t *testing.T) {
 		os.Stdout = w
 
 		// Tests the function
-		logger.WriteApplicationLog(ctx, severity.Info, "writes %s log", "info")
+		func() {
+			// Wrapped in a function to have the source location output the intended string
+			logger.WriteApplicationLog(ctx, severity.Info, "writes %s log", "info")
+		}()
 
 		w.Close()
 
@@ -64,7 +67,7 @@ func TestLoggerWriteApplicationLog(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"testing.go","line":"1127","function":"testing.tRunner"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
+		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logger_test.go","line":"57","function":"github.com/glassonion1/logz/internal/logger_test.TestLoggerWriteApplicationLog.func3"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stdout
