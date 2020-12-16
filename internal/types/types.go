@@ -37,15 +37,33 @@ type SourceLocation struct {
 type HTTPRequest struct {
 	RequestMethod string   `json:"requestMethod"`
 	RequestURL    string   `json:"requestUrl"`
-	RequestSize   string   `json:"requestSize"`
+	RequestSize   string   `json:"requestSize,omitempty"`
 	Status        int      `json:"status"`
-	ResponseSize  string   `json:"responseSize"`
-	UserAgent     string   `json:"userAgent"`
-	RemoteIP      string   `json:"remoteIp"`
-	ServerIP      string   `json:"serverIp"`
-	Referer       string   `json:"referer"`
-	Latency       Duration `json:"latency"`
+	ResponseSize  string   `json:"responseSize,omitempty"`
+	UserAgent     string   `json:"userAgent,omitempty"`
+	RemoteIP      string   `json:"remoteIp,omitempty"`
+	ServerIP      string   `json:"serverIp,omitempty"`
+	Referer       string   `json:"referer,omitempty"`
+	Latency       Duration `json:"latencyy"`
 	Protocol      string   `json:"protocol"`
+}
+
+var _ json.Marshaler = Duration(0)
+
+// Duration provides time.Duration by protobuf format.
+type Duration time.Duration
+
+// MarshalJSON convert raw value to JSON value.
+func (d Duration) MarshalJSON() ([]byte, error) {
+	nanos := time.Duration(d).Nanoseconds()
+	secs := nanos / 1e9
+	nanos -= secs * 1e9
+
+	v := make(map[string]interface{})
+	v["seconds"] = int64(secs)
+	v["nanos"] = int32(nanos)
+
+	return json.Marshal(v)
 }
 
 func MakeHTTPRequest(r http.Request, status, responseSize int, elapsed time.Duration) HTTPRequest {
@@ -83,20 +101,4 @@ func getServerIp() string {
 		}
 	}
 	return ""
-}
-
-// Duration provides time.Duration by protobuf format.
-type Duration time.Duration
-
-// MarshalJSON convert raw value to JSON value.
-func (d Duration) MarshalJSON() ([]byte, error) {
-	nanos := time.Duration(d).Nanoseconds()
-	secs := nanos / 1e9
-	nanos -= secs * 1e9
-
-	v := make(map[string]interface{})
-	v["seconds"] = int64(secs)
-	v["nanos"] = int32(nanos)
-
-	return json.Marshal(v)
 }
