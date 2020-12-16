@@ -5,7 +5,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/glassonion1/logz)](https://goreportcard.com/report/github.com/glassonion1/logz)
 [![GitHub license](https://img.shields.io/github/license/glassonion1/logz)](https://github.com/glassonion1/logz/blob/main/LICENSE)
 
-Package logz provides the structured and hierarchized log with the OpenTelemetry([https://opentelemetry.io](https://opentelemetry.io)).  
+The logz is Go library for grouping a access log and application logs. logz uses OpenTelemetry([https://opentelemetry.io](https://opentelemetry.io)) to generate the trace id.  
 This is for Google Cloud Logging (formerly known as Stackdriver Logging).  
 The logz supports to App Engine and Cloud Run and GKE.
 
