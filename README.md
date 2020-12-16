@@ -9,7 +9,7 @@ The logz is Go library for grouping a access log and application logs. logz uses
 This is for Google Cloud Logging (formerly known as Stackdriver Logging).  
 The logz supports to App Engine and Cloud Run and GKE.
 
-Use [this](https://github.com/glassonion1/logz/tree/main/go111) if your project is App Engine 1st generation.
+Use [go111 package](https://github.com/glassonion1/logz/tree/main/go111) if your project is App Engine 1st generation.
 
 ## Install
 ```
