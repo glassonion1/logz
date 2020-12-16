@@ -34,38 +34,32 @@ type SourceLocation struct {
 }
 
 type HTTPRequest struct {
-	RequestMethod                  string `json:"requestMethod"`
-	RequestURL                     string `json:"requestUrl"`
-	RequestSize                    string `json:"requestSize"`
-	Status                         int    `json:"status"`
-	ResponseSize                   string `json:"responseSize"`
-	UserAgent                      string `json:"userAgent"`
-	RemoteIP                       string `json:"remoteIp"`
-	ServerIP                       string `json:"serverIp"`
-	Referer                        string `json:"referer"`
-	Latency                        string `json:"latency"`
-	CacheLookup                    bool   `json:"cacheLookup"`
-	CacheHit                       bool   `json:"cacheHit"`
-	CacheValidatedWithOriginServer bool   `json:"cacheValidatedWithOriginServer"`
-	Protocol                       string `json:"protocol"`
+	RequestMethod string `json:"requestMethod"`
+	RequestURL    string `json:"requestUrl"`
+	RequestSize   string `json:"requestSize"`
+	Status        int    `json:"status"`
+	ResponseSize  string `json:"responseSize"`
+	UserAgent     string `json:"userAgent"`
+	RemoteIP      string `json:"remoteIp"`
+	ServerIP      string `json:"serverIp"`
+	Referer       string `json:"referer"`
+	Latency       string `json:"latency"`
+	Protocol      string `json:"protocol"`
 }
 
 func MakeHTTPRequest(r http.Request, status, responseSize int, elapsed time.Duration) HTTPRequest {
 	return HTTPRequest{
-		RequestMethod:                  r.Method,
-		RequestURL:                     r.URL.RequestURI(),
-		RequestSize:                    fmt.Sprintf("%d", r.ContentLength),
-		Status:                         status,
-		ResponseSize:                   fmt.Sprintf("%d", responseSize),
-		UserAgent:                      r.UserAgent(),
-		RemoteIP:                       strings.Split(r.RemoteAddr, ":")[0],
-		ServerIP:                       getServerIp(),
-		Referer:                        r.Referer(),
-		Latency:                        fmt.Sprintf("%fs", elapsed.Seconds()),
-		CacheLookup:                    false,
-		CacheHit:                       false,
-		CacheValidatedWithOriginServer: false,
-		Protocol:                       r.Proto,
+		RequestMethod: r.Method,
+		RequestURL:    r.URL.RequestURI(),
+		RequestSize:   fmt.Sprintf("%d", r.ContentLength),
+		Status:        status,
+		ResponseSize:  fmt.Sprintf("%d", responseSize),
+		UserAgent:     r.UserAgent(),
+		RemoteIP:      strings.Split(r.RemoteAddr, ":")[0],
+		ServerIP:      getServerIp(),
+		Referer:       r.Referer(),
+		Latency:       fmt.Sprintf("%fs", elapsed.Seconds()),
+		Protocol:      r.Proto,
 	}
 }
 
