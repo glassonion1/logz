@@ -67,7 +67,7 @@ func TestLoggerWriteApplicationLog(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logger_test.go","line":"57","function":"github.com/glassonion1/logz/internal/logger_test.TestLoggerWriteApplicationLog.func3"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
+		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logger_test.go","line":"58","function":"github.com/glassonion1/logz/internal/logger_test.TestLoggerWriteApplicationLog.func3"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stdout
