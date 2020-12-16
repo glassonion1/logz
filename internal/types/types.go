@@ -25,6 +25,8 @@ type AccessLog struct {
 	Time        time.Time   `json:"time"`
 	Trace       string      `json:"logging.googleapis.com/trace"`
 	HTTPRequest HTTPRequest `json:"httpRequest"`
+	JSONPayload interface{} `json:"jsonPayload"`
+	Message     string      `json:"message"`
 }
 
 type SourceLocation struct {
