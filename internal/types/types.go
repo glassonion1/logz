@@ -41,10 +41,10 @@ type HTTPRequest struct {
 	ResponseSize  string `json:"responseSize"`
 	UserAgent     string `json:"userAgent"`
 	RemoteIP      string `json:"remoteIp"`
-	ServerIP      string `json:"serverIp"`
-	Referer       string `json:"referer"`
-	Latency       string `json:"latency"`
-	Protocol      string `json:"protocol"`
+	//ServerIP      string `json:"serverIp"`
+	//Referer       string `json:"referer"`
+	Latency  string `json:"latency"`
+	Protocol string `json:"protocol"`
 }
 
 func MakeHTTPRequest(r http.Request, status, responseSize int, elapsed time.Duration) HTTPRequest {
@@ -56,10 +56,10 @@ func MakeHTTPRequest(r http.Request, status, responseSize int, elapsed time.Dura
 		ResponseSize:  fmt.Sprintf("%d", responseSize),
 		UserAgent:     r.UserAgent(),
 		RemoteIP:      strings.Split(r.RemoteAddr, ":")[0],
-		ServerIP:      getServerIp(),
-		Referer:       r.Referer(),
-		Latency:       fmt.Sprintf("%fs", elapsed.Seconds()),
-		Protocol:      r.Proto,
+		//		ServerIP:      getServerIp(),
+		//		Referer:       r.Referer(),
+		Latency:  fmt.Sprintf("%fs", elapsed.Seconds()),
+		Protocol: r.Proto,
 	}
 }
 
