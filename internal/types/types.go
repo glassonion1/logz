@@ -25,8 +25,6 @@ type AccessLog struct {
 	Time        time.Time   `json:"time"`
 	Trace       string      `json:"logging.googleapis.com/trace"`
 	HTTPRequest HTTPRequest `json:"httpRequest"`
-	// this is dummy field
-	JSONPayload interface{} `json:"jsonPayload"`
 }
 
 type SourceLocation struct {

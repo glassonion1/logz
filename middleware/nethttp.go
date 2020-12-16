@@ -12,6 +12,8 @@ import (
 func NetHTTP(label string) func(http.Handler) http.Handler {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			rw := writer.NewResponseWriter(w)
+
 			tracer := otel.Tracer(label)
 
 			prop := otel.GetTextMapPropagator()
@@ -19,14 +21,13 @@ func NetHTTP(label string) func(http.Handler) http.Handler {
 
 			newCtx, span := tracer.Start(ctx, r.URL.String())
 
-			rw := writer.NewResponseWriter(w)
 			defer func() {
 				tID := span.SpanContext().TraceID.String()
 				logger.WriteAccessLog(tID, *r, rw.StatusCode(), rw.Size(), rw.Elapsed())
 				span.End()
 			}()
 
-			h.ServeHTTP(w, r.WithContext(newCtx))
+			h.ServeHTTP(rw, r.WithContext(newCtx))
 		})
 	}
 }

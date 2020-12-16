@@ -1,6 +1,7 @@
 package middleware_test
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -19,6 +20,7 @@ func TestNetHTTP(t *testing.T) {
 			if sc.TraceID == "" || sc.SpanID == "" {
 				t.Error("failed to test middleware, span context is zero value.")
 			}
+			fmt.Fprintf(w, "hello world")
 		}))
 
 		mid := middleware.NetHTTP("test/component")(mux)
