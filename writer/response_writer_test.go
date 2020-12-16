@@ -15,7 +15,7 @@ func TestResponseWriter(t *testing.T) {
 
 	mux := http.NewServeMux()
 	mux.Handle("/test1", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, data)
+		fmt.Fprint(w, data)
 	}))
 
 	req := httptest.NewRequest(http.MethodGet, "/test1", nil)

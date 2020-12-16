@@ -21,12 +21,8 @@ var NowFunc = time.Now
 
 const traceFmt = "projects/%s/traces/%s"
 
-// Looger is for GCP
-type Logger struct {
-}
-
-// WriteAppLog writes a application log to stdout
-func (l *Logger) Write(ctx context.Context, severity severity.Severity, format string, a ...interface{}) {
+// WriteApplicationLog writes a application log to stdout
+func WriteApplicationLog(ctx context.Context, severity severity.Severity, format string, a ...interface{}) {
 	// Gets the traceID and spanID
 	sc := spancontext.Extract(ctx)
 

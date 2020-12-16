@@ -1,72 +1,107 @@
 package logz_test
 
 import (
-	"bytes"
-	"os"
-	"strings"
+	"net/http"
+	"net/http/httptest"
 	"testing"
-	"time"
 
 	"context"
 
 	"github.com/glassonion1/logz"
+	"github.com/glassonion1/logz/internal/spancontext"
+	"github.com/glassonion1/logz/middleware"
 	"github.com/google/go-cmp/cmp"
 )
 
-/*
-Tests logz functions.
-The log format is below.
-{
-  "severity":"INFO",
-  "message":"writes info log",
-  "time":"2020-12-31T23:59:59.999999999Z",
-  "logging.googleapis.com/sourceLocation":{
-    "file":"logz_test.go",
-    "line":"46",
-    "function":"github.com/glassonion1/logz_test.TestLogz.func2"
-  },
-  "logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000",
-  "logging.googleapis.com/spanId":"0000000000000000",
-  "logging.googleapis.com/trace_sampled":false
-}
-*/
 func TestLogz(t *testing.T) {
 
-	ctx := context.Background()
+	logz.InitTracer()
 
-	now := time.Date(2020, 12, 31, 23, 59, 59, 999999999, time.UTC)
-	logz.SetNow(now)
-	logz.SetProjectID("test")
+	t.Run("Tests logz integration", func(t *testing.T) {
 
-	// Evacuates the stdout
-	orgStdout := os.Stdout
-	defer func() {
-		os.Stdout = orgStdout
-	}()
-	t.Run("Tests the Infof function", func(t *testing.T) {
-		// Overrides the stdout to the buffer.
-		r, w, _ := os.Pipe()
-		os.Stdout = w
+		mux := http.NewServeMux()
+		mux.Handle("/test1", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			logz.Infof(ctx, "write %s log", "info")
 
-		// Tests the function
-		logz.Infof(ctx, "writes %s log", "info")
+			sc := spancontext.Extract(ctx)
 
-		w.Close()
+			if sc.TraceID == "00000000000000000000000000000000" {
+				t.Error("trace id is zero value")
+			}
+			if sc.SpanID == "0000000000000000" {
+				t.Error("span id is zero value")
+			}
+		}))
 
-		var buf bytes.Buffer
-		if _, err := buf.ReadFrom(r); err != nil {
-			t.Fatalf("failed to read buf: %v", err)
-		}
+		mux.Handle("/test2", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			logz.Infof(ctx, "write %s log", "info")
 
-		// Gets the log from buffer.
-		got := strings.TrimRight(buf.String(), "\n")
+			sc := spancontext.Extract(ctx)
 
-		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logz_test.go","line":"52","function":"github.com/glassonion1/logz_test.TestLogz.func2"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
+			if sc.TraceID == "00000000000000000000000000000000" {
+				t.Error("trace id is zero value")
+			}
+			if sc.SpanID == "0000000000000000" {
+				t.Error("span id is zero value")
+			}
 
-		if diff := cmp.Diff(got, expected); diff != "" {
-			// Restores the stdout
-			os.Stdout = orgStdout
-			t.Errorf("failed log info test: %v", diff)
-		}
+			// nested function
+			func(ctx context.Context) {
+				logz.Infof(ctx, "write %s nested log", "info")
+
+				child := spancontext.Extract(ctx)
+				if child.TraceID != sc.TraceID {
+					t.Error("trace and child trace id are not equal")
+				}
+				if child.SpanID != sc.SpanID {
+					t.Error("span and child span id are not equal")
+				}
+			}(ctx)
+		}))
+
+		mid := middleware.NetHTTP("test/component")(mux)
+		req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
+		rec1 := httptest.NewRecorder()
+		mid.ServeHTTP(rec1, req1)
+
+		req2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
+		rec2 := httptest.NewRecorder()
+		mid.ServeHTTP(rec2, req2)
 	})
+
+}
+
+func TestLogzRemoteParent(t *testing.T) {
+
+	logz.InitTracer()
+
+	t.Run("Tests logz integration with remote parent", func(t *testing.T) {
+
+		mux := http.NewServeMux()
+		mux.Handle("/test1", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			logz.Infof(ctx, "write %s log", "info")
+
+			sc := spancontext.Extract(ctx)
+
+			if diff := cmp.Diff(sc.TraceID, "a0d3eee13de6a4bbcf291eb444b94f28"); diff != "" {
+				t.Errorf("remote and current trace id are missmatch: %v", diff)
+			}
+			if sc.SpanID == "0000000000000000" {
+				t.Error("span id is zero value")
+			}
+		}))
+
+		mid := middleware.NetHTTP("test/component")(mux)
+		req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
+
+		// Simulates managed cloud service like App Engine or Cloud Run, that sets HTTP header of X-Cloud-Trace-Context
+		req1.Header.Set("X-Cloud-Trace-Context", "a0d3eee13de6a4bbcf291eb444b94f28/1;o=1")
+
+		rec1 := httptest.NewRecorder()
+		mid.ServeHTTP(rec1, req1)
+	})
+
 }
