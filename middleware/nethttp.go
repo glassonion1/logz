@@ -4,16 +4,17 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/glassonion1/logz/internal/logger"
-	"github.com/glassonion1/logz/writer"
 	"go.opentelemetry.io/otel"
+
+	"github.com/glassonion1/logz"
+	"github.com/glassonion1/logz/writer"
 )
 
 // NetHTTP is middleware for HTTP handler
 func NetHTTP(label string) func(http.Handler) http.Handler {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			started := logger.NowFunc()
+			started := time.Now()
 			rw := writer.NewResponseWriter(w)
 
 			tracer := otel.Tracer(label)
@@ -25,7 +26,7 @@ func NetHTTP(label string) func(http.Handler) http.Handler {
 
 			defer func() {
 				tID := span.SpanContext().TraceID.String()
-				logger.WriteAccessLog(tID, *r, rw.StatusCode(), rw.Size(), time.Since(started))
+				logz.Access(tID, *r, rw.StatusCode(), rw.Size(), time.Since(started))
 				span.End()
 			}()
 

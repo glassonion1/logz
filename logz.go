@@ -2,6 +2,8 @@ package logz
 
 import (
 	"context"
+	"net/http"
+	"time"
 
 	"github.com/glassonion1/logz/internal/config"
 	"github.com/glassonion1/logz/internal/logger"
@@ -40,6 +42,11 @@ func Errorf(ctx context.Context, format string, a ...interface{}) {
 // Criticalf writes critical log to the stdout
 func Criticalf(ctx context.Context, format string, a ...interface{}) {
 	logger.WriteApplicationLog(ctx, severity.Critical, format, a...)
+}
+
+// Access writes access log to the stderr
+func Access(traceID string, r http.Request, statusCode, size int, elapsed time.Duration) {
+	logger.WriteAccessLog(traceID, r, statusCode, size, elapsed)
 }
 
 // InitTracer initializes OpenTelemetry tracer
