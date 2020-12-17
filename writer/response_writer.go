@@ -35,7 +35,7 @@ func (rw *ResponseWriter) WriteHeader(statusCode int) {
 	rw.ResponseWriter.WriteHeader(statusCode)
 }
 
-// Size returns repsonse size
+// Size returns response size
 func (rw *ResponseWriter) Size() int {
 	return int(atomic.LoadUint64(&rw.size))
 }
