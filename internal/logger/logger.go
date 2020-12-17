@@ -61,7 +61,7 @@ func WriteAccessLog(traceID string, r http.Request, status, responseSize int, el
 	trace := fmt.Sprintf(traceFmt, config.ProjectID, traceID)
 	ety := &types.AccessLog{
 		Severity:    severity.Default.String(),
-		Time:        NowFunc(),
+		Time:        NowFunc(), // Timestamp marks the end of the request.
 		Trace:       trace,
 		HTTPRequest: req,
 	}

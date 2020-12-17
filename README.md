@@ -5,12 +5,17 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/glassonion1/logz)](https://goreportcard.com/report/github.com/glassonion1/logz)
 [![GitHub license](https://img.shields.io/github/license/glassonion1/logz)](https://github.com/glassonion1/logz/blob/main/LICENSE)
 
-The logz is Go library for grouping a access log and application logs. logz uses OpenTelemetry([https://opentelemetry.io](https://opentelemetry.io)) to generate the trace id.  
+The logz is Go library for grouping application logs related a access log. logz uses OpenTelemetry([https://opentelemetry.io](https://opentelemetry.io)) to generate the trace id.  
 This is for Google Cloud Logging (formerly known as Stackdriver Logging).  
-The logz supports to App Engine and Cloud Run and GKE.
+
+## Features
+- Writes access log each http requests
+- Writes application log
+- Grouping application logs related a access log.
+- Supports to App Engine 2nd and Cloud Run and GKE.
 
 Use [go111](https://github.com/glassonion1/logz/tree/main/go111) package if your project is App Engine 1st generation.
-
+  
 ## Install
 ```
 $ go get github.com/glassonion1/logz
@@ -19,20 +24,32 @@ $ go get github.com/glassonion1/logz
 ## Usage
 
 ```go
-mux := http.NewServeMux()
-mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-    ctx := r.Context()
+package main
 
-    // Writes info log
-    logz.Infof(ctx, "logging...")
-})
+import (
+    "log"
+    "net/http"
 
-logz.SetProjectID("your gcp project id")
-logz.InitTracer()
-// Sets the middleware
-h := middleware.NetHTTP("tracer name")(mux)
+    "github.com/glassonion1/logz"
+    "github.com/glassonion1/logz/middleware"
+)
 
-log.Fatal(http.ListenAndServe(":8080", h))
+func main() {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        ctx := r.Context()
+
+        // Writes info log
+        logz.Infof(ctx, "writes %s log", "info")
+    })
+
+    logz.SetProjectID("your gcp project id")
+    logz.InitTracer()
+    // Sets the middleware
+    h := middleware.NetHTTP("tracer name")(mux)
+
+    log.Fatal(http.ListenAndServe(":8080", h))
+}
 ```
 
 ## Examples

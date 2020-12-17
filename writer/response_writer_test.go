@@ -24,9 +24,6 @@ func TestResponseWriter(t *testing.T) {
 
 	mux.ServeHTTP(rw, req)
 
-	if int64(rw.Elapsed()) == 0 {
-		t.Fatalf("time measurement is not working")
-	}
 	if rw.Size() != dataLen {
 		t.Fatalf("size mismatch len of test data: %d != %d", rw.Size(), dataLen)
 	}

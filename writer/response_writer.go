@@ -3,13 +3,11 @@ package writer
 import (
 	"net/http"
 	"sync/atomic"
-	"time"
 )
 
 // ResponseWriter is size counter for http.ResponseWriter
 type ResponseWriter struct {
 	http.ResponseWriter
-	started    time.Time
 	size       uint64
 	statusCode int
 }
@@ -18,7 +16,6 @@ type ResponseWriter struct {
 func NewResponseWriter(rw http.ResponseWriter) *ResponseWriter {
 	return &ResponseWriter{
 		ResponseWriter: rw,
-		started:        time.Now(),
 	}
 }
 
@@ -36,11 +33,6 @@ func (rw *ResponseWriter) Write(buf []byte) (int, error) {
 func (rw *ResponseWriter) WriteHeader(statusCode int) {
 	rw.statusCode = statusCode
 	rw.ResponseWriter.WriteHeader(statusCode)
-}
-
-// Elapsed returns since started value
-func (rw *ResponseWriter) Elapsed() time.Duration {
-	return time.Since(rw.started)
 }
 
 // Size returns repsonse size

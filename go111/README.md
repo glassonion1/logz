@@ -15,11 +15,11 @@ $ go get github.com/glassonion1/logz/go111
 package main
 
 import (
-	"log"
-	"net/http"
+    "log"
+    "net/http"
 
-	logz "github.com/glassonion1/logz/go111"
-	"github.com/glassonion1/logz/go111/middleware"
+    logz "github.com/glassonion1/logz/go111"
+    "github.com/glassonion1/logz/go111/middleware"
 )
 
 func main() {
