@@ -61,6 +61,8 @@ The logz leverages the grouping feature of GCP Cloud Logging. See following refe
 * https://godoc.org/cloud.google.com/go/logging#hdr-Grouping_Logs_by_Request
 
 ## Log format
+The log format is based on [LogEntry](https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry)'s structured payload
+
 ### Application log format
 
 ```json
