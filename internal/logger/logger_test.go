@@ -2,6 +2,8 @@ package logger_test
 
 import (
 	"bytes"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
@@ -67,11 +69,52 @@ func TestLoggerWriteApplicationLog(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logger_test.go","line":"58","function":"github.com/glassonion1/logz/internal/logger_test.TestLoggerWriteApplicationLog.func3"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
+		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logger_test.go","line":"60","function":"github.com/glassonion1/logz/internal/logger_test.TestLoggerWriteApplicationLog.func3"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stdout
 			os.Stdout = orgStdout
+			t.Errorf("failed log info test: %v", diff)
+		}
+	})
+}
+
+func TestLoggerWriteAccessLog(t *testing.T) {
+
+	logger.NowFunc = func() time.Time {
+		return time.Date(2020, 12, 31, 23, 59, 59, 999999999, time.UTC)
+	}
+	config.ProjectID = "test"
+
+	// Evacuates the stderr
+	orgStderr := os.Stderr
+	defer func() {
+		os.Stderr = orgStderr
+	}()
+	t.Run("Tests WriteAccessLog function", func(t *testing.T) {
+		// Overrides the stderr to the buffer.
+		r, w, _ := os.Pipe()
+		os.Stderr = w
+
+		// Tests the function
+		req := httptest.NewRequest(http.MethodGet, "/test1", nil)
+		logger.WriteAccessLog("a0d3eee13de6a4bbcf291eb444b94f28", *req, 200, 333, time.Duration(100))
+
+		w.Close()
+
+		var buf bytes.Buffer
+		if _, err := buf.ReadFrom(r); err != nil {
+			t.Fatalf("failed to read buf: %v", err)
+		}
+
+		// Gets the log from buffer.
+		got := strings.TrimRight(buf.String(), "\n")
+
+		expected := `{"severity":"DEFAULT","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/a0d3eee13de6a4bbcf291eb444b94f28","httpRequest":{"requestMethod":"GET","requestUrl":"/test1","requestSize":"0","status":200,"responseSize":"333","remoteIp":"192.0.2.1","serverIp":"192.168.100.115","latencyy":{"nanos":100,"seconds":0},"protocol":"HTTP/1.1"}}`
+
+		if diff := cmp.Diff(got, expected); diff != "" {
+			// Restores the stderr
+			os.Stderr = orgStderr
 			t.Errorf("failed log info test: %v", diff)
 		}
 	})
