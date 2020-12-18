@@ -31,3 +31,21 @@ var severityMap = map[Severity]string{
 func (s Severity) String() string {
 	return severityMap[s]
 }
+
+type ContextSeverity struct {
+	logged []Severity
+}
+
+func (c *ContextSeverity) Add(s Severity) {
+	c.logged = append(c.logged, s)
+}
+
+func (c *ContextSeverity) Max() Severity {
+	max := Default
+	for _, s := range c.logged {
+		if s > max {
+			max = s
+		}
+	}
+	return max
+}

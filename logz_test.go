@@ -105,5 +105,4 @@ func TestLogzRemoteParent(t *testing.T) {
 		rec1 := httptest.NewRecorder()
 		mid.ServeHTTP(rec1, req1)
 	})
-
 }
