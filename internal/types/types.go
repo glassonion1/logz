@@ -28,12 +28,14 @@ type AccessLog struct {
 	HTTPRequest HTTPRequest `json:"httpRequest"`
 }
 
+// SourceLocation is a location of source
 type SourceLocation struct {
 	File     string `json:"file"`
 	Line     string `json:"line"`
 	Function string `json:"function"`
 }
 
+// HTTPRequest is a http request struct for the access log
 type HTTPRequest struct {
 	RequestMethod string   `json:"requestMethod"`
 	RequestURL    string   `json:"requestUrl"`
@@ -66,6 +68,7 @@ func (d Duration) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v)
 }
 
+// MakeHTTPRequest makes HTTPRequest struct.
 func MakeHTTPRequest(r http.Request, status, responseSize int, elapsed time.Duration) HTTPRequest {
 	return HTTPRequest{
 		RequestMethod: r.Method,
@@ -75,14 +78,17 @@ func MakeHTTPRequest(r http.Request, status, responseSize int, elapsed time.Dura
 		ResponseSize:  fmt.Sprintf("%d", responseSize),
 		UserAgent:     r.UserAgent(),
 		RemoteIP:      strings.Split(r.RemoteAddr, ":")[0],
-		ServerIP:      getServerIp(),
+		ServerIP:      GetServerIP(),
 		Referer:       r.Referer(),
 		Latency:       Duration(elapsed),
 		Protocol:      r.Proto,
 	}
 }
 
-func getServerIp() string {
+// GetServerIP is a function for the unit test
+var GetServerIP = getServerIP
+
+func getServerIP() string {
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		return ""

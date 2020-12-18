@@ -32,14 +32,17 @@ func (s Severity) String() string {
 	return severityMap[s]
 }
 
+// ContextSeverity is list of severity that managed by context
 type ContextSeverity struct {
 	logged []Severity
 }
 
+// Add adds a list of severity
 func (c *ContextSeverity) Add(s Severity) {
 	c.logged = append(c.logged, s)
 }
 
+// Max returns max from list of severity
 func (c *ContextSeverity) Max() Severity {
 	max := Default
 	for _, s := range c.logged {

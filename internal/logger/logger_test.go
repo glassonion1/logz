@@ -14,6 +14,7 @@ import (
 	"github.com/glassonion1/logz/internal/config"
 	"github.com/glassonion1/logz/internal/logger"
 	"github.com/glassonion1/logz/internal/severity"
+	"github.com/glassonion1/logz/internal/types"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -69,7 +70,7 @@ func TestLoggerWriteApplicationLog(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logger_test.go","line":"60","function":"github.com/glassonion1/logz/internal/logger_test.TestLoggerWriteApplicationLog.func3"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
+		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logger_test.go","line":"61","function":"github.com/glassonion1/logz/internal/logger_test.TestLoggerWriteApplicationLog.func3"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stdout
@@ -104,6 +105,10 @@ The format of access log is below
 */
 func TestLoggerWriteAccessLog(t *testing.T) {
 
+	types.GetServerIP = func() string {
+		return "192.168.0.1"
+	}
+
 	logger.NowFunc = func() time.Time {
 		return time.Date(2020, 12, 31, 23, 59, 59, 999999999, time.UTC)
 	}
@@ -133,7 +138,7 @@ func TestLoggerWriteAccessLog(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"DEFAULT","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/a0d3eee13de6a4bbcf291eb444b94f28","httpRequest":{"requestMethod":"GET","requestUrl":"/test1","requestSize":"0","status":200,"responseSize":"333","remoteIp":"192.0.2.1","serverIp":"192.168.100.115","latencyy":{"nanos":100,"seconds":0},"protocol":"HTTP/1.1"}}`
+		expected := `{"severity":"DEFAULT","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/a0d3eee13de6a4bbcf291eb444b94f28","httpRequest":{"requestMethod":"GET","requestUrl":"/test1","requestSize":"0","status":200,"responseSize":"333","remoteIp":"192.0.2.1","serverIp":"192.168.0.1","latencyy":{"nanos":100,"seconds":0},"protocol":"HTTP/1.1"}}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stderr
