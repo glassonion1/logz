@@ -20,4 +20,4 @@ github.com/glassonion1/logz/contrib/{IMPORT_PATH}/logz{PACKAGE_NAME}
 Where the {IMPORT_PATH} and {PACKAGE_NAME} are the standard Go identifiers for the package being contributed.
 
 For example:
-* github.com/glassonion1/logz/tree/main/contrib/github.com/gin-gonic/gin/logzgin
+* github.com/glassonion1/logz/contrib/github.com/gin-gonic/gin/logzgin
