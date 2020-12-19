@@ -22,17 +22,17 @@ func Middleware(label string) echo.MiddlewareFunc {
 			prop := otel.GetTextMapPropagator()
 			ctx := prop.Extract(r.Context(), r.Header)
 
-			newCtx, span := tracer.Start(ctx, r.URL.String())
+			ctx, span := tracer.Start(ctx, r.URL.String())
+			ctx = logz.StartCollectingSeverity(ctx)
 
 			defer func() {
-				tID := span.SpanContext().TraceID.String()
 				size := int(c.Response().Size)
-				logz.Access(tID, *r, c.Response().Status, size, time.Since(started))
+				logz.Access(ctx, *r, c.Response().Status, size, time.Since(started))
 				span.End()
 			}()
 
 			// pass the span through the request context
-			c.SetRequest(r.WithContext(newCtx))
+			c.SetRequest(r.WithContext(ctx))
 
 			// serve the request to the next middleware
 			return next(c)

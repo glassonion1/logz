@@ -67,7 +67,7 @@ func TestNetHTTPMaxSeverity(t *testing.T) {
 		mux.Handle("/test3", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 
-			logz.Warningf(ctx, "write %s log1", "warning")
+			logz.Warningf(ctx, "write %s log", "warning")
 
 			fmt.Fprintf(w, "hello world")
 		}))

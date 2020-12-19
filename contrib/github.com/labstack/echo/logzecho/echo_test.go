@@ -1,8 +1,11 @@
 package logzecho_test
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/glassonion1/logz"
@@ -16,7 +19,7 @@ func TestMiddleware(t *testing.T) {
 
 	logz.InitTracer()
 
-	t.Run("Tests logzgin integration", func(t *testing.T) {
+	t.Run("Tests logzecho integration", func(t *testing.T) {
 		t.Parallel()
 
 		router := echo.New()
@@ -44,5 +47,78 @@ func TestMiddleware(t *testing.T) {
 
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, r)
+	})
+}
+
+func TestMiddlewareMaxSeverity(t *testing.T) {
+
+	// Evacuates the stderr
+	orgStderr := os.Stderr
+	defer func() {
+		os.Stderr = orgStderr
+	}()
+	t.Run("Tests logzecho integration", func(t *testing.T) {
+		t.Parallel()
+
+		// Overrides the stderr to the buffer.
+		r, w, _ := os.Pipe()
+		os.Stderr = w
+
+		router := echo.New()
+		router.Use(logzecho.Middleware("foobar"))
+		router.GET("/test1", func(c echo.Context) error {
+			r := c.Request()
+			ctx := r.Context()
+
+			logz.Infof(ctx, "write %s log", "info")
+			logz.Errorf(ctx, "write %s log", "error")
+
+			return c.NoContent(500)
+		})
+		router.GET("/test2", func(c echo.Context) error {
+			r := c.Request()
+			ctx := r.Context()
+
+			logz.Debugf(ctx, "write %s log1", "debug")
+			logz.Debugf(ctx, "write %s log2", "debug")
+
+			return c.NoContent(200)
+		})
+		router.GET("/test3", func(c echo.Context) error {
+			r := c.Request()
+			ctx := r.Context()
+
+			logz.Warningf(ctx, "write %s log", "warning")
+
+			return c.NoContent(200)
+		})
+
+		rec := httptest.NewRecorder()
+
+		r1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
+		router.ServeHTTP(rec, r1)
+		r2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
+		router.ServeHTTP(rec, r2)
+		r3 := httptest.NewRequest(http.MethodGet, "/test3", nil)
+		router.ServeHTTP(rec, r3)
+
+		// Tests max severity of access log
+		w.Close()
+		var buf bytes.Buffer
+		if _, err := buf.ReadFrom(r); err != nil {
+			t.Fatalf("failed to read buf: %v", err)
+		}
+
+		// Gets the log from buffer.
+		got := buf.String()
+		if !strings.Contains(got, `"severity":"ERROR"`) {
+			t.Error("max severity is not set correctly")
+		}
+		if !strings.Contains(got, `"severity":"INFO"`) {
+			t.Error("max severity is not set correctly")
+		}
+		if !strings.Contains(got, `"severity":"WARNING"`) {
+			t.Error("max severity is not set correctly")
+		}
 	})
 }
