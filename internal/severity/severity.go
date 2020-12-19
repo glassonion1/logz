@@ -1,5 +1,6 @@
 package severity
 
+// Severity is type of severity that extended int
 type Severity int
 
 // Enum for severity

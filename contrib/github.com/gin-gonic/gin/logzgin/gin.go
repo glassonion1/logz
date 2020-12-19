@@ -8,6 +8,7 @@ import (
 	"go.opentelemetry.io/otel"
 )
 
+// Middleware is middleware for HTTP handler
 func Middleware(label string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
