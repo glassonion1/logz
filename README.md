@@ -12,6 +12,7 @@ This is for Google Cloud Logging (formerly known as Stackdriver Logging).
 * Writes access log each http requests
 * Writes application log
 * Grouping application logs related a access log.
+  * The parent entry will inherit the severity of its children
 * Supports to App Engine 2nd and Cloud Run and GKE.
 
 Use [go111](https://github.com/glassonion1/logz/tree/main/go111) package if your project is App Engine 1st generation.
