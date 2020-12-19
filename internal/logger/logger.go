@@ -22,7 +22,13 @@ var NowFunc = time.Now
 const traceFmt = "projects/%s/traces/%s"
 
 // WriteApplicationLog writes a application log to stdout
-func WriteApplicationLog(ctx context.Context, severity severity.Severity, format string, a ...interface{}) {
+func WriteApplicationLog(ctx context.Context, s severity.Severity, format string, a ...interface{}) {
+	// Add a severity to the ContextSeverity
+	cs := severity.GetContextSeverity(ctx)
+	if cs != nil {
+		cs.Add(s)
+	}
+
 	// Gets the traceID and spanID
 	sc := spancontext.Extract(ctx)
 
@@ -40,7 +46,7 @@ func WriteApplicationLog(ctx context.Context, severity severity.Severity, format
 	trace := fmt.Sprintf(traceFmt, config.ProjectID, sc.TraceID)
 	msg := fmt.Sprintf(format, a...)
 	ety := &types.ApplicationLog{
-		Severity:       severity.String(),
+		Severity:       s.String(),
 		Message:        msg,
 		Time:           NowFunc(),
 		SourceLocation: location,
@@ -55,12 +61,25 @@ func WriteApplicationLog(ctx context.Context, severity severity.Severity, format
 }
 
 // WriteAccessLog writes a access log to stderr
-func WriteAccessLog(traceID string, r http.Request, status, responseSize int, elapsed time.Duration) {
+func WriteAccessLog(ctx context.Context, r http.Request, status, responseSize int, elapsed time.Duration) {
+	// Gets the ContextSeverity
+	cs := severity.GetContextSeverity(ctx)
+	s := severity.Info
+	if cs != nil {
+		max := cs.Max()
+		if max > s {
+			s = max
+		}
+	}
+
+	// Gets the traceID and spanID
+	sc := spancontext.Extract(ctx)
+
 	req := types.MakeHTTPRequest(r, status, responseSize, elapsed)
 
-	trace := fmt.Sprintf(traceFmt, config.ProjectID, traceID)
+	trace := fmt.Sprintf(traceFmt, config.ProjectID, sc.TraceID)
 	ety := &types.AccessLog{
-		Severity:    severity.Default.String(),
+		Severity:    s.String(),
 		Time:        NowFunc(), // Timestamp marks the end of the request.
 		Trace:       trace,
 		HTTPRequest: req,

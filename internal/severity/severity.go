@@ -1,5 +1,7 @@
 package severity
 
+import "context"
+
 // Severity is type of severity that extended int
 type Severity int
 
@@ -52,4 +54,19 @@ func (c *ContextSeverity) Max() Severity {
 		}
 	}
 	return max
+}
+
+type contextKey struct{}
+
+var contextSeverityKey = &contextKey{}
+
+// SetContextSeverity sets the ContextSeverity instance to context
+func SetContextSeverity(ctx context.Context, cs *ContextSeverity) context.Context {
+	return context.WithValue(ctx, contextSeverityKey, cs)
+}
+
+// GetContextSeverity gets the ContextSeverity instance from context
+func GetContextSeverity(ctx context.Context) *ContextSeverity {
+	v, _ := ctx.Value(contextSeverityKey).(*ContextSeverity)
+	return v
 }

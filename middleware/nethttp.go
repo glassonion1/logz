@@ -22,15 +22,15 @@ func NetHTTP(label string) func(http.Handler) http.Handler {
 			prop := otel.GetTextMapPropagator()
 			ctx := prop.Extract(r.Context(), r.Header)
 
-			newCtx, span := tracer.Start(ctx, r.URL.String())
+			ctx, span := tracer.Start(ctx, r.URL.String())
+			ctx = logz.StartCollectingSeverity(ctx)
 
 			defer func() {
-				tID := span.SpanContext().TraceID.String()
-				logz.Access(tID, *r, rw.StatusCode(), rw.Size(), time.Since(started))
+				logz.Access(ctx, *r, rw.StatusCode(), rw.Size(), time.Since(started))
 				span.End()
 			}()
 
-			h.ServeHTTP(rw, r.WithContext(newCtx))
+			h.ServeHTTP(rw, r.WithContext(ctx))
 		})
 	}
 }

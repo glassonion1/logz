@@ -105,6 +105,8 @@ The format of access log is below
 */
 func TestLoggerWriteAccessLog(t *testing.T) {
 
+	ctx := context.Background()
+
 	types.GetServerIP = func() string {
 		return "192.168.0.1"
 	}
@@ -126,7 +128,7 @@ func TestLoggerWriteAccessLog(t *testing.T) {
 
 		// Tests the function
 		req := httptest.NewRequest(http.MethodGet, "/test1", nil)
-		logger.WriteAccessLog("a0d3eee13de6a4bbcf291eb444b94f28", *req, 200, 333, time.Duration(100))
+		logger.WriteAccessLog(ctx, *req, 200, 333, time.Duration(100))
 
 		w.Close()
 
@@ -138,7 +140,7 @@ func TestLoggerWriteAccessLog(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"DEFAULT","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/a0d3eee13de6a4bbcf291eb444b94f28","httpRequest":{"requestMethod":"GET","requestUrl":"/test1","requestSize":"0","status":200,"responseSize":"333","remoteIp":"192.0.2.1","serverIp":"192.168.0.1","latencyy":{"nanos":100,"seconds":0},"protocol":"HTTP/1.1"}}`
+		expected := `{"severity":"INFO","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","httpRequest":{"requestMethod":"GET","requestUrl":"/test1","requestSize":"0","status":200,"responseSize":"333","remoteIp":"192.0.2.1","serverIp":"192.168.0.1","latencyy":{"nanos":100,"seconds":0},"protocol":"HTTP/1.1"}}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stderr

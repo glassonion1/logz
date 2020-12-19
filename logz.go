@@ -21,7 +21,7 @@ func SetProjectID(projectID string) {
 
 // Debugf writes debug log to the stdout
 func Debugf(ctx context.Context, format string, a ...interface{}) {
-	logger.WriteApplicationLog(ctx, severity.Default, format, a...)
+	logger.WriteApplicationLog(ctx, severity.Debug, format, a...)
 }
 
 // Infof writes info log to the stdout
@@ -45,8 +45,8 @@ func Criticalf(ctx context.Context, format string, a ...interface{}) {
 }
 
 // Access writes access log to the stderr
-func Access(traceID string, r http.Request, statusCode, size int, elapsed time.Duration) {
-	logger.WriteAccessLog(traceID, r, statusCode, size, elapsed)
+func Access(ctx context.Context, r http.Request, statusCode, size int, elapsed time.Duration) {
+	logger.WriteAccessLog(ctx, r, statusCode, size, elapsed)
 }
 
 // InitTracer initializes OpenTelemetry tracer
@@ -59,4 +59,10 @@ func InitTracer() {
 		propagation.Baggage{},
 		logzpropagation.HTTPFormat{})
 	otel.SetTextMapPropagator(props)
+}
+
+// StartCollectingSeverity starts collectiong severity
+func StartCollectingSeverity(ctx context.Context) context.Context {
+	cs := &severity.ContextSeverity{}
+	return severity.SetContextSeverity(ctx, cs)
 }

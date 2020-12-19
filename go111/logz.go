@@ -15,7 +15,7 @@ func SetProjectID(projectID string) {
 
 // Debugf writes debug log to the stdout
 func Debugf(ctx context.Context, format string, a ...interface{}) {
-	logger.WriteApplicationLog(ctx, severity.Default, format, a...)
+	logger.WriteApplicationLog(ctx, severity.Debug, format, a...)
 }
 
 // Infof writes info log to the stdout
