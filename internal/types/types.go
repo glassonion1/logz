@@ -46,7 +46,7 @@ type HTTPRequest struct {
 	RemoteIP      string   `json:"remoteIp,omitempty"`
 	ServerIP      string   `json:"serverIp,omitempty"`
 	Referer       string   `json:"referer,omitempty"`
-	Latency       Duration `json:"latencyy"`
+	Latency       Duration `json:"latency"`
 	Protocol      string   `json:"protocol"`
 }
 
