@@ -140,7 +140,7 @@ func TestLoggerWriteAccessLog(t *testing.T) {
 		// Gets the log from buffer.
 		got := strings.TrimRight(buf.String(), "\n")
 
-		expected := `{"severity":"INFO","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","httpRequest":{"requestMethod":"GET","requestUrl":"/test1","requestSize":"0","status":200,"responseSize":"333","remoteIp":"192.0.2.1","serverIp":"192.168.0.1","latencyy":{"nanos":100,"seconds":0},"protocol":"HTTP/1.1"}}`
+		expected := `{"severity":"INFO","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","httpRequest":{"requestMethod":"GET","requestUrl":"/test1","requestSize":"0","status":200,"responseSize":"333","remoteIp":"192.0.2.1","serverIp":"192.168.0.1","latency":{"nanos":100,"seconds":0},"protocol":"HTTP/1.1"}}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			// Restores the stderr
