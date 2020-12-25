@@ -8,6 +8,8 @@
 The logz is logger library in Go for grouping application logs related a access log. logz uses OpenTelemetry([https://opentelemetry.io](https://opentelemetry.io)) to generate the trace id.  
 This is for Google Cloud Logging (formerly known as Stackdriver Logging).  
 
+![screenshot](![screenshot](https://github.com/glassonion1/logz/blob/main/img/screenshot.png "Cloug Logging") "Cloug Logging")
+
 ## Features
 * Writes access log each http requests
 * Writes application log
