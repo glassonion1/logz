@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -50,25 +49,25 @@ type HTTPRequest struct {
 	Protocol      string   `json:"protocol"`
 }
 
-var _ json.Marshaler = Duration(0)
-
-// Duration provides time.Duration by protobuf format.
-type Duration time.Duration
-
-// MarshalJSON convert raw value to JSON value.
-func (d Duration) MarshalJSON() ([]byte, error) {
-	nanos := time.Duration(d).Nanoseconds()
-	secs := nanos / 1e9
-	nanos -= secs * 1e9
-
-	v := make(map[string]interface{})
-	v["seconds"] = int64(secs)
-	v["nanos"] = int32(nanos)
-
-	return json.Marshal(v)
+// Duration is duration format for protobuf
+// see: https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#duration
+type Duration struct {
+	Nanos   int32 `json:"nanos"`
+	Seconds int64 `json:"seconds"`
 }
 
-// MakeHTTPRequest makes HTTPRequest struct.
+// MakeDuration makes duration struct from time.Duration
+func MakeDuration(d time.Duration) Duration {
+	nanos := d.Nanoseconds()
+	secs := nanos / 1e9
+	nanos -= secs * 1e9
+	return Duration{
+		Nanos:   int32(nanos),
+		Seconds: secs,
+	}
+}
+
+// MakeHTTPRequest makes HTTPRequest struct from http.Request
 func MakeHTTPRequest(r http.Request, status, responseSize int, elapsed time.Duration) HTTPRequest {
 	return HTTPRequest{
 		RequestMethod: r.Method,
@@ -80,7 +79,7 @@ func MakeHTTPRequest(r http.Request, status, responseSize int, elapsed time.Dura
 		RemoteIP:      strings.Split(r.RemoteAddr, ":")[0],
 		ServerIP:      GetServerIP(),
 		Referer:       r.Referer(),
-		Latency:       Duration(elapsed),
+		Latency:       MakeDuration(elapsed),
 		Protocol:      r.Proto,
 	}
 }
