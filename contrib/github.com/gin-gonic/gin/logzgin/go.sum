@@ -7,10 +7,8 @@ github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE
 github.com/gin-contrib/sse v0.1.0/go.mod h1:RHrZQHXnP2xjPF+u1gW/2HnVO7nvIa9PG3Gm+fLHvGI=
 github.com/gin-gonic/gin v1.6.3 h1:ahKqKTFpO5KTPHxWZjEdPScmYaGtLo8Y4DMHoEsnp14=
 github.com/gin-gonic/gin v1.6.3/go.mod h1:75u5sXoLsGZoRN5Sgbi1eraJ4GU3++wFwWzhwvtwp4M=
-github.com/glassonion1/logz v0.2.8 h1:8/zOPf0Qr8UjFOgR2vXgyGFP+hbzQ9wh3bEAbecqXdY=
-github.com/glassonion1/logz v0.2.8/go.mod h1:VYayvGAhaPTOuEzZWftXvWO1pyCbWnQrwoxklnmxc9E=
-github.com/glassonion1/logz v0.3.0 h1:rxvCTLcfE2d+yNKRC5NJfjYqb4KvIL+XD3NVpgmYTt0=
-github.com/glassonion1/logz v0.3.0/go.mod h1:VYayvGAhaPTOuEzZWftXvWO1pyCbWnQrwoxklnmxc9E=
+github.com/glassonion1/logz v0.3.3 h1:M01ZiXA2nvlNJRWqNVY7B4Xdo9lN2f17E1476qomDys=
+github.com/glassonion1/logz v0.3.3/go.mod h1:t0n54T9G6CW8yNdSPuuQ4YpKYHMa65ifdMrt0l32UHY=
 github.com/go-playground/assert/v2 v2.0.1 h1:MsBgLAaY856+nPRTKrp3/OZK38U/wa0CcBYNjji3q3A=
 github.com/go-playground/assert/v2 v2.0.1/go.mod h1:VDjEfimB/XKnb+ZQfWdccd7VUvScMdVu0Titje2rxJ4=
 github.com/go-playground/locales v0.13.0 h1:HyWk6mgj5qFqCT5fjGBuRArbVDfE4hi8+e8ceBS/t7Q=

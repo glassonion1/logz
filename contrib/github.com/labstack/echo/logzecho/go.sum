@@ -2,8 +2,8 @@ github.com/DataDog/sketches-go v0.0.1/go.mod h1:Q5DbzQ+3AkgGwymQO7aZFNP7ns2lZKGt
 github.com/benbjohnson/clock v1.0.3/go.mod h1:bGMdMPoPVvcYyt1gHDf4J2KE153Yf9BuiUKYMaxlTDM=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/glassonion1/logz v0.3.0 h1:rxvCTLcfE2d+yNKRC5NJfjYqb4KvIL+XD3NVpgmYTt0=
-github.com/glassonion1/logz v0.3.0/go.mod h1:VYayvGAhaPTOuEzZWftXvWO1pyCbWnQrwoxklnmxc9E=
+github.com/glassonion1/logz v0.3.3 h1:M01ZiXA2nvlNJRWqNVY7B4Xdo9lN2f17E1476qomDys=
+github.com/glassonion1/logz v0.3.3/go.mod h1:t0n54T9G6CW8yNdSPuuQ4YpKYHMa65ifdMrt0l32UHY=
 github.com/google/go-cmp v0.5.4 h1:L8R9j+yAqZuZjsqh/z+F1NCffTKKLShY6zXTItVIZ8M=
 github.com/google/go-cmp v0.5.4/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/gofuzz v1.1.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=
