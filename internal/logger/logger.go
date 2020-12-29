@@ -65,8 +65,10 @@ func WriteAccessLog(ctx context.Context, r http.Request, status, responseSize in
 	// Gets the ContextSeverity
 	cs := severity.GetContextSeverity(ctx)
 	s := severity.Info
-	if status >= 400 {
+	if status >= 500 {
 		s = severity.Error
+	} else if status >= 400 {
+		s = severity.Warning
 	}
 	if cs != nil {
 		max := cs.Max()

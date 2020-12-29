@@ -124,6 +124,10 @@ func TestNetHTTPMaxSeverityNoLog(t *testing.T) {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "hello world")
 		}))
+		mux.Handle("/test3", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "hello world")
+		}))
 
 		mid := middleware.NetHTTP("test/component")(mux)
 		rec := httptest.NewRecorder()
@@ -132,6 +136,8 @@ func TestNetHTTPMaxSeverityNoLog(t *testing.T) {
 		mid.ServeHTTP(rec, req1)
 		req2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
 		mid.ServeHTTP(rec, req2)
+		req3 := httptest.NewRequest(http.MethodGet, "/test3", nil)
+		mid.ServeHTTP(rec, req3)
 
 		// Tests max severity of access log
 		w.Close()
@@ -143,6 +149,9 @@ func TestNetHTTPMaxSeverityNoLog(t *testing.T) {
 		// Gets the log from buffer.
 		got := buf.String()
 		if !strings.Contains(got, `"severity":"ERROR"`) {
+			t.Error("max severity is not set correctly: error")
+		}
+		if !strings.Contains(got, `"severity":"WARNING"`) {
 			t.Error("max severity is not set correctly: error")
 		}
 		if !strings.Contains(got, `"severity":"INFO"`) {
