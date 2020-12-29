@@ -127,8 +127,9 @@ func TestLoggerWriteAccessLog(t *testing.T) {
 		os.Stderr = w
 
 		// Tests the function
-		req := httptest.NewRequest(http.MethodGet, "/test1", nil)
-		logger.WriteAccessLog(ctx, *req, 200, 333, time.Duration(100))
+		httpReq := httptest.NewRequest(http.MethodGet, "/test1", nil)
+		req := types.MakeHTTPRequest(*httpReq, 200, 333, time.Duration(100))
+		logger.WriteAccessLog(ctx, req)
 
 		w.Close()
 

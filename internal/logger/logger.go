@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"os"
 	"runtime"
 	"strings"
@@ -61,13 +60,13 @@ func WriteApplicationLog(ctx context.Context, s severity.Severity, format string
 }
 
 // WriteAccessLog writes a access log to stderr
-func WriteAccessLog(ctx context.Context, r http.Request, status, responseSize int, elapsed time.Duration) {
+func WriteAccessLog(ctx context.Context, req types.HTTPRequest) {
 	// Gets the ContextSeverity
 	cs := severity.GetContextSeverity(ctx)
 	s := severity.Info
-	if status >= 500 {
+	if req.Status >= 500 {
 		s = severity.Error
-	} else if status >= 400 {
+	} else if req.Status >= 400 {
 		s = severity.Warning
 	}
 	if cs != nil {
@@ -79,8 +78,6 @@ func WriteAccessLog(ctx context.Context, r http.Request, status, responseSize in
 
 	// Gets the traceID and spanID
 	sc := spancontext.Extract(ctx)
-
-	req := types.MakeHTTPRequest(r, status, responseSize, elapsed)
 
 	trace := fmt.Sprintf(traceFmt, config.ProjectID, sc.TraceID)
 	ety := &types.AccessLog{

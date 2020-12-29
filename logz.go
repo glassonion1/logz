@@ -2,12 +2,14 @@ package logz
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/glassonion1/logz/internal/config"
 	"github.com/glassonion1/logz/internal/logger"
 	"github.com/glassonion1/logz/internal/severity"
+	"github.com/glassonion1/logz/internal/types"
 	logzpropagation "github.com/glassonion1/logz/propagation"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
@@ -45,8 +47,25 @@ func Criticalf(ctx context.Context, format string, a ...interface{}) {
 }
 
 // Access writes access log to the stderr
-func Access(ctx context.Context, r http.Request, statusCode, size int, elapsed time.Duration) {
-	logger.WriteAccessLog(ctx, r, statusCode, size, elapsed)
+func Access(ctx context.Context, r http.Request, statusCode, responseSize int, elapsed time.Duration) {
+	req := types.MakeHTTPRequest(r, statusCode, responseSize, elapsed)
+	logger.WriteAccessLog(ctx, req)
+}
+
+// AccessLog writes access log to the stderr without http.Request
+func AccessLog(ctx context.Context, method, url, userAgent, remoteIP, protocol string, statusCode, requestSize, responseSize int, elapsed time.Duration) {
+	req := types.HTTPRequest{
+		RequestMethod: method,
+		RequestURL:    url,
+		RequestSize:   fmt.Sprintf("%d", requestSize),
+		Status:        statusCode,
+		ResponseSize:  fmt.Sprintf("%d", responseSize),
+		UserAgent:     userAgent,
+		RemoteIP:      remoteIP,
+		Latency:       types.MakeDuration(elapsed),
+		Protocol:      protocol,
+	}
+	logger.WriteAccessLog(ctx, req)
 }
 
 // InitTracer initializes OpenTelemetry tracer
