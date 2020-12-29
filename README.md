@@ -23,6 +23,7 @@ Use [go111](https://github.com/glassonion1/logz/tree/main/go111) package if your
 The logz contribution packages that provides middlewares for 3rd-party Go packages.
 * [gin](https://github.com/glassonion1/logz/tree/main/contrib/github.com/gin-gonic/gin/logzgin)
 * [echo](https://github.com/glassonion1/logz/tree/main/contrib/github.com/labstack/echo/logzecho)
+* [gRPC(alpha)](https://github.com/glassonion1/logz/tree/main/contrib/google.golang.org/grpc/logzgrpc)
 
 For more details: [https://github.com/glassonion1/logz/tree/main/contrib](https://github.com/glassonion1/logz/tree/main/contrib)
 
