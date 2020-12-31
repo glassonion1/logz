@@ -88,7 +88,7 @@ func UnaryServerInterceptor(label string) grpc.UnaryServerInterceptor {
 			resSize := binarySize(res)
 			code := int(status.Code(err))
 
-			logz.AccessLog(ctx, "gRPC", info.FullMethod,
+			logz.AccessLog(ctx, "gRPC Unary", info.FullMethod,
 				ua, ip, "HTTP/2",
 				code, reqSize, resSize, time.Since(started))
 			span.End()
@@ -154,7 +154,7 @@ func StreamServerInterceptor(label string) grpc.StreamServerInterceptor {
 			resSize := wrapped.responseSize
 			code := int(status.Code(err))
 
-			logz.AccessLog(ctx, "gRPC", info.FullMethod,
+			logz.AccessLog(ctx, "gRPC Server Streaming", info.FullMethod,
 				ua, ip, "HTTP/2",
 				code, reqSize, resSize, time.Since(started))
 			span.End()

@@ -1,11 +1,9 @@
 package middleware_test
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 
@@ -37,16 +35,7 @@ func TestNetHTTP(t *testing.T) {
 
 func TestNetHTTPMaxSeverity(t *testing.T) {
 
-	// Evacuates the stderr
-	orgStderr := os.Stderr
-	defer func() {
-		os.Stderr = orgStderr
-	}()
 	t.Run("Tests the middleware", func(t *testing.T) {
-		// Overrides the stderr to the buffer.
-		r, w, _ := os.Pipe()
-		os.Stderr = w
-
 		mux := http.NewServeMux()
 		mux.Handle("/test1", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
@@ -75,22 +64,15 @@ func TestNetHTTPMaxSeverity(t *testing.T) {
 		mid := middleware.NetHTTP("test/component")(mux)
 		rec := httptest.NewRecorder()
 
-		req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
-		mid.ServeHTTP(rec, req1)
-		req2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
-		mid.ServeHTTP(rec, req2)
-		req3 := httptest.NewRequest(http.MethodGet, "/test3", nil)
-		mid.ServeHTTP(rec, req3)
+		got := logz.ExtractStderr(t, func() {
+			req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
+			mid.ServeHTTP(rec, req1)
+			req2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
+			mid.ServeHTTP(rec, req2)
+			req3 := httptest.NewRequest(http.MethodGet, "/test3", nil)
+			mid.ServeHTTP(rec, req3)
+		})
 
-		// Tests max severity of access log
-		w.Close()
-		var buf bytes.Buffer
-		if _, err := buf.ReadFrom(r); err != nil {
-			t.Fatalf("failed to read buf: %v", err)
-		}
-
-		// Gets the log from buffer.
-		got := buf.String()
 		if !strings.Contains(got, `"severity":"ERROR"`) {
 			t.Error("max severity is not set correctly: error")
 		}
@@ -105,15 +87,7 @@ func TestNetHTTPMaxSeverity(t *testing.T) {
 
 func TestNetHTTPMaxSeverityNoLog(t *testing.T) {
 
-	// Evacuates the stderr
-	orgStderr := os.Stderr
-	defer func() {
-		os.Stderr = orgStderr
-	}()
 	t.Run("Tests the middleware", func(t *testing.T) {
-		// Overrides the stderr to the buffer.
-		r, w, _ := os.Pipe()
-		os.Stderr = w
 
 		mux := http.NewServeMux()
 		mux.Handle("/test1", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -132,22 +106,15 @@ func TestNetHTTPMaxSeverityNoLog(t *testing.T) {
 		mid := middleware.NetHTTP("test/component")(mux)
 		rec := httptest.NewRecorder()
 
-		req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
-		mid.ServeHTTP(rec, req1)
-		req2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
-		mid.ServeHTTP(rec, req2)
-		req3 := httptest.NewRequest(http.MethodGet, "/test3", nil)
-		mid.ServeHTTP(rec, req3)
+		got := logz.ExtractStderr(t, func() {
+			req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
+			mid.ServeHTTP(rec, req1)
+			req2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
+			mid.ServeHTTP(rec, req2)
+			req3 := httptest.NewRequest(http.MethodGet, "/test3", nil)
+			mid.ServeHTTP(rec, req3)
+		})
 
-		// Tests max severity of access log
-		w.Close()
-		var buf bytes.Buffer
-		if _, err := buf.ReadFrom(r); err != nil {
-			t.Fatalf("failed to read buf: %v", err)
-		}
-
-		// Gets the log from buffer.
-		got := buf.String()
 		if !strings.Contains(got, `"severity":"ERROR"`) {
 			t.Error("max severity is not set correctly: error")
 		}

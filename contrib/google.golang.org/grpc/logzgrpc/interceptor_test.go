@@ -1,9 +1,7 @@
 package logzgrpc_test
 
 import (
-	"bytes"
 	"context"
-	"os"
 	"strings"
 	"testing"
 
@@ -37,32 +35,14 @@ func TestUnaryServerInterceptor(t *testing.T) {
 		return nil, deniedErr
 	}
 
-	orgStderr := os.Stderr
-	defer func() {
-		os.Stderr = orgStderr
-	}()
-
 	t.Run("Tests unary server interceptor", func(t *testing.T) {
-		// Overrides the stderr to the buffer.
-		r, w, _ := os.Pipe()
-		os.Stderr = w
 
-		_, err := usi(context.Background(), &stubProtoMessage{}, &grpc.UnaryServerInfo{}, handler)
-
-		w.Close()
-
-		var buf bytes.Buffer
-		if _, err := buf.ReadFrom(r); err != nil {
-			t.Fatalf("failed to read buf: %v", err)
-		}
-		got := buf.String()
-
-		// Restores the stderr
-		os.Stderr = orgStderr
-
-		if err != nil && err.Error() != deniedErr.Error() {
-			t.Errorf("unexpected error occured: %s", err)
-		}
+		got := extractStderr(t, func() {
+			_, err := usi(context.Background(), &stubProtoMessage{}, &grpc.UnaryServerInfo{}, handler)
+			if err != nil && err.Error() != deniedErr.Error() {
+				t.Errorf("unexpected error occured: %s", err)
+			}
+		})
 
 		if !strings.Contains(got, `"severity":"INFO"`) {
 			t.Error("severity is not set correctly: error")
@@ -72,7 +52,7 @@ func TestUnaryServerInterceptor(t *testing.T) {
 			t.Error("trace is not set correctly: error")
 		}
 
-		if !strings.Contains(got, `"httpRequest":{"requestMethod":"gRPC"`) {
+		if !strings.Contains(got, `"httpRequest":{"requestMethod":"gRPC Unary"`) {
 			t.Error("http request is not set correctly: error")
 		}
 	})
@@ -112,32 +92,14 @@ func TestStreamServerInterceptor(t *testing.T) {
 		return deniedErr
 	}
 
-	orgStderr := os.Stderr
-	defer func() {
-		os.Stderr = orgStderr
-	}()
-
 	t.Run("Tests stream server interceptor", func(t *testing.T) {
-		// Overrides the stderr to the buffer.
-		r, w, _ := os.Pipe()
-		os.Stderr = w
+		got := extractStderr(t, func() {
+			err := ssi(&stubProtoMessage{}, &stubServerStream{}, &grpc.StreamServerInfo{}, handler)
 
-		err := ssi(&stubProtoMessage{}, &stubServerStream{}, &grpc.StreamServerInfo{}, handler)
-
-		w.Close()
-
-		var buf bytes.Buffer
-		if _, err := buf.ReadFrom(r); err != nil {
-			t.Fatalf("failed to read buf: %v", err)
-		}
-		got := buf.String()
-
-		// Restores the stderr
-		os.Stderr = orgStderr
-
-		if err != nil && err.Error() != deniedErr.Error() {
-			t.Errorf("unexpected error occured: %s", err)
-		}
+			if err != nil && err.Error() != deniedErr.Error() {
+				t.Errorf("unexpected error occured: %s", err)
+			}
+		})
 
 		if !strings.Contains(got, `"severity":"INFO"`) {
 			t.Error("severity is not set correctly: error")
@@ -147,7 +109,7 @@ func TestStreamServerInterceptor(t *testing.T) {
 			t.Error("trace is not set correctly: error")
 		}
 
-		if !strings.Contains(got, `"httpRequest":{"requestMethod":"gRPC"`) {
+		if !strings.Contains(got, `"httpRequest":{"requestMethod":"gRPC Server Streaming"`) {
 			t.Error("http request is not set correctly: error")
 		}
 	})
