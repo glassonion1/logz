@@ -7,6 +7,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/glassonion1/logz"
@@ -103,14 +104,14 @@ func UnaryServerInterceptor(label string) grpc.UnaryServerInterceptor {
 // SendMsg method call.
 type serverStream struct {
 	grpc.ServerStream
-	requestSize  int
-	responseSize int
+	requestSize  uint64
+	responseSize uint64
 }
 
 func (s *serverStream) SendMsg(m interface{}) error {
 	err := s.ServerStream.SendMsg(m)
 	if err == nil {
-		s.responseSize += binarySize(m)
+		atomic.AddUint64(&s.responseSize, uint64(binarySize(m)))
 	}
 	return err
 }
@@ -118,7 +119,7 @@ func (s *serverStream) SendMsg(m interface{}) error {
 func (s *serverStream) RecvMsg(m interface{}) error {
 	err := s.ServerStream.RecvMsg(m)
 	if err == nil {
-		s.requestSize += binarySize(m)
+		atomic.AddUint64(&s.requestSize, uint64(binarySize(m)))
 	}
 	return err
 }
@@ -150,8 +151,8 @@ func StreamServerInterceptor(label string) grpc.StreamServerInterceptor {
 		var err error
 		defer func() {
 			ua, ip := extractUAAndIP(md)
-			reqSize := wrapped.requestSize
-			resSize := wrapped.responseSize
+			reqSize := int(wrapped.requestSize)
+			resSize := int(wrapped.responseSize)
 			code := int(status.Code(err))
 
 			logz.AccessLog(ctx, "gRPC Server Streaming", info.FullMethod,

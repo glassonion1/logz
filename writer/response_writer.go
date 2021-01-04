@@ -37,7 +37,7 @@ func (rw *ResponseWriter) WriteHeader(statusCode int) {
 
 // Size returns response size
 func (rw *ResponseWriter) Size() int {
-	return int(atomic.LoadUint64(&rw.size))
+	return int(rw.size)
 }
 
 // StatusCode returns sent status code
