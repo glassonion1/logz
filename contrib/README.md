@@ -8,7 +8,7 @@ The following contribution packages are provided for popular Go packages and use
 | ---- |
 | [github.com/gin-gonic/gin](https://github.com/glassonion1/logz/tree/main/contrib/github.com/gin-gonic/gin/logzgin) |
 | [github.com/labstack/echo](https://github.com/glassonion1/logz/tree/main/contrib/github.com/labstack/echo/logzecho) |
-| [google.golang.org/grpc(alpha)](https://github.com/glassonion1/logz/tree/main/contrib/google.golang.org/grpc/logzgrpc) |
+| [google.golang.org/grpc](https://github.com/glassonion1/logz/tree/main/contrib/google.golang.org/grpc/logzgrpc) |
 
 ## Packaging
 
