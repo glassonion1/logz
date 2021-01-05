@@ -10,6 +10,7 @@ import (
 	"github.com/glassonion1/logz"
 	"github.com/glassonion1/logz/internal/spancontext"
 	"github.com/glassonion1/logz/middleware"
+	"github.com/glassonion1/logz/testhelper"
 )
 
 func TestNetHTTP(t *testing.T) {
@@ -64,7 +65,7 @@ func TestNetHTTPMaxSeverity(t *testing.T) {
 		mid := middleware.NetHTTP("test/component")(mux)
 		rec := httptest.NewRecorder()
 
-		got := logz.ExtractStderr(t, func() {
+		got := testhelper.ExtractStderr(t, func() {
 			req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
 			mid.ServeHTTP(rec, req1)
 			req2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
@@ -106,7 +107,7 @@ func TestNetHTTPMaxSeverityNoLog(t *testing.T) {
 		mid := middleware.NetHTTP("test/component")(mux)
 		rec := httptest.NewRecorder()
 
-		got := logz.ExtractStderr(t, func() {
+		got := testhelper.ExtractStderr(t, func() {
 			req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
 			mid.ServeHTTP(rec, req1)
 			req2 := httptest.NewRequest(http.MethodGet, "/test2", nil)

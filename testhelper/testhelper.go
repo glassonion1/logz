@@ -1,4 +1,4 @@
-package logz
+package testhelper
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 	"testing"
 )
 
+// ExtractStdout extracts string from stdout
 func ExtractStdout(t *testing.T, fnc func()) string {
 	// Evacuates the stderr
 	orgStdout := os.Stdout
@@ -30,6 +31,7 @@ func ExtractStdout(t *testing.T, fnc func()) string {
 	return strings.TrimRight(buf.String(), "\n")
 }
 
+// ExtractStdout extracts string from stderr
 func ExtractStderr(t *testing.T, fnc func()) string {
 	// Evacuates the stderr
 	orgStderr := os.Stderr
