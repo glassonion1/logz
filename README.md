@@ -63,6 +63,73 @@ func main() {
 }
 ```
 
+### Recommended settings
+#### GAE
+```go
+func main() {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        ctx := r.Context()
+
+        // Writes info log
+        logz.Infof(ctx, "writes %s log", "info")
+    })
+
+    logz.SetConfig(logz.Config{
+        WritesAccessLog: true, // Writes the access log
+    })
+    logz.InitTracer()
+    // Sets the middleware
+    h := middleware.NetHTTP("tracer name")(mux)
+
+    log.Fatal(http.ListenAndServe(":8080", h))
+}
+```
+#### Cloud Run
+```go
+func main() {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        ctx := r.Context()
+
+        // Writes info log
+        logz.Infof(ctx, "writes %s log", "info")
+    })
+
+    logz.SetConfig(logz.Config{
+        ProjectID:       "your gcp project id",
+        WritesAccessLog: false, // Writes no access log
+    })
+    logz.InitTracer()
+    // Sets the middleware
+    h := middleware.NetHTTP("tracer name")(mux)
+
+    log.Fatal(http.ListenAndServe(":8080", h))
+}
+```
+#### GKE
+```go
+func main() {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        ctx := r.Context()
+
+        // Writes info log
+        logz.Infof(ctx, "writes %s log", "info")
+    })
+
+    logz.SetConfig(logz.Config{
+        ProjectID:       "your gcp project id",
+        WritesAccessLog: true, // Writes the access log
+    })
+    logz.InitTracer()
+    // Sets the middleware
+    h := middleware.NetHTTP("tracer name")(mux)
+
+    log.Fatal(http.ListenAndServe(":8080", h))
+}
+```
+
 ## Examples
 See this sample projects for logz detailed usage  
 https://github.com/glassonion1/logz/tree/main/example

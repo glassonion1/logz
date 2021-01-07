@@ -1,12 +1,19 @@
 package types
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"net/http"
 	"strings"
 	"time"
 )
+
+// WriteAccessLogFunc is function type that writes an access log
+type WriteAccessLogFunc func(ctx context.Context, req HTTPRequest)
+
+// WriteEmptyAccessLog writes empty log
+var WriteEmptyAccessLog = func(context.Context, HTTPRequest) {}
 
 // ApplicationLog is a log written by the developer by any timing
 type ApplicationLog struct {

@@ -1,14 +1,12 @@
 package config
 
-import "os"
+import (
+	"github.com/glassonion1/logz/internal/types"
+)
 
 var (
 	// ProjectID is gcp project id
 	ProjectID = ""
+	// WriteAccessLog is function that writes an access log
+	WriteAccessLog types.WriteAccessLogFunc
 )
-
-func init() {
-	// In case of App Engine, the value can be obtained.
-	// Otherwise, it is an empty string.
-	ProjectID = os.Getenv("GOOGLE_CLOUD_PROJECT")
-}

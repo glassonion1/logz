@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/glassonion1/logz/internal/config"
@@ -16,9 +17,35 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
+func init() {
+	// In case of App Engine, the value can be obtained.
+	// Otherwise, it is an empty string.
+	config.ProjectID = os.Getenv("GOOGLE_CLOUD_PROJECT")
+
+	config.WriteAccessLog = logger.WriteAccessLog
+}
+
+// Config is configurations for logz
+type Config struct {
+	// GCP Project ID
+	ProjectID string
+	// Whether or not to write the access log
+	WritesAccessLog bool
+}
+
 // SetProjectID sets gcp project id to the logger
 func SetProjectID(projectID string) {
 	config.ProjectID = projectID
+}
+
+// SetConfig sets config to the logger
+func SetConfig(conf Config) {
+	if conf.ProjectID != "" {
+		config.ProjectID = conf.ProjectID
+	}
+	if !conf.WritesAccessLog {
+		config.WriteAccessLog = types.WriteEmptyAccessLog
+	}
 }
 
 // Debugf writes debug log to the stdout
@@ -49,7 +76,7 @@ func Criticalf(ctx context.Context, format string, a ...interface{}) {
 // Access writes access log to the stderr
 func Access(ctx context.Context, r http.Request, statusCode, responseSize int, elapsed time.Duration) {
 	req := types.MakeHTTPRequest(r, statusCode, responseSize, elapsed)
-	logger.WriteAccessLog(ctx, req)
+	config.WriteAccessLog(ctx, req)
 }
 
 // AccessLog writes access log to the stderr without http.Request
@@ -65,7 +92,7 @@ func AccessLog(ctx context.Context, method, url, userAgent, remoteIP, protocol s
 		Latency:       types.MakeDuration(elapsed),
 		Protocol:      protocol,
 	}
-	logger.WriteAccessLog(ctx, req)
+	config.WriteAccessLog(ctx, req)
 }
 
 // InitTracer initializes OpenTelemetry tracer
