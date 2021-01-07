@@ -1,23 +1,36 @@
-name: release
+name: Release CLI to the GitHub Release
 on:
-  push:
-    tags:
-    - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+    inputs:
+      method:
+        description: |
+          Which number to increment in the semantic versioning.
+          Set 'major', 'minor' or 'patch'.
+        required: true
+
 jobs:
-  goreleaser:
+  release:
+    name: Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
+      - name: Wait Tests
+        id: test_result
+        uses: Sibz/await-status-action@v1.0.1
         with:
-          fetch-depth: 1
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          contexts: test-status
+          authToken: ${{ secrets.GITHUB_TOKEN }}
+          timeout: 30
+      - name: Check Test Result
+        if: steps.test_result.outputs.result != 'success'
+        run: |
+          echo "feiled ${{ steps.test_result.outputs.failedCheckNames }}"
+          echo "status ${{ steps.test_result.outputs.failedCheckStates }}"
+          exit 1
+      - name: Checkout Sources
+        uses: actions/checkout@v2
+      - name: Bump-up Semantic Version
+        uses: kyoh86/git-vertag-action@v1.1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
+          # method: "major", "minor" or "patch" to update tag with semver
+          method: "${{ github.event.inputs.method }}"
+          push: true
