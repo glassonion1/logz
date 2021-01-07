@@ -30,7 +30,7 @@ jobs:
   test-status:
     name: Test status
     runs-on: ubuntu-latest
-    needs: test
+    needs: [lint, test]
     steps:
       - name: Set Check Status Success
         uses: Sibz/github-status-action@v1.1.1
