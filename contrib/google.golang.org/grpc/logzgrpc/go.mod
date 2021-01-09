@@ -3,7 +3,7 @@ module github.com/glassonion1/logz/contrib/google.golang.org/grpc/logzgrpc
 go 1.15
 
 require (
-	github.com/glassonion1/logz v0.3.3
+	github.com/glassonion1/logz v0.3.6
 	go.opentelemetry.io/otel v0.15.0
 	google.golang.org/grpc v1.34.0
 )
