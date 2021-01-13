@@ -104,8 +104,14 @@ func UnaryServerInterceptor(label string) grpc.UnaryServerInterceptor {
 // SendMsg method call.
 type serverStream struct {
 	grpc.ServerStream
+	ctx context.Context
+
 	requestSize  uint64
 	responseSize uint64
+}
+
+func (s *serverStream) Context() context.Context {
+	return s.ctx
 }
 
 func (s *serverStream) SendMsg(m interface{}) error {
@@ -124,6 +130,8 @@ func (s *serverStream) RecvMsg(m interface{}) error {
 	return err
 }
 
+// StreamServerInterceptor returns a grpc.StreamServerInterceptor suitable
+// for use in a grpc.NewServer call.
 func StreamServerInterceptor(label string) grpc.StreamServerInterceptor {
 	return func(
 		srv interface{},
@@ -147,6 +155,7 @@ func StreamServerInterceptor(label string) grpc.StreamServerInterceptor {
 
 		wrapped := &serverStream{
 			ServerStream: stream,
+			ctx:          ctx,
 		}
 		var err error
 		defer func() {

@@ -7,6 +7,7 @@ import (
 
 	"github.com/glassonion1/logz"
 	"github.com/glassonion1/logz/contrib/google.golang.org/grpc/logzgrpc"
+	"github.com/glassonion1/logz/testhelper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -37,7 +38,7 @@ func TestUnaryServerInterceptor(t *testing.T) {
 
 	t.Run("Tests unary server interceptor", func(t *testing.T) {
 
-		got := extractStderr(t, func() {
+		got := testhelper.ExtractStderr(t, func() {
 			_, err := usi(context.Background(), &stubProtoMessage{}, &grpc.UnaryServerInfo{}, handler)
 			if err != nil && err.Error() != deniedErr.Error() {
 				t.Errorf("unexpected error occured: %s", err)
@@ -93,7 +94,7 @@ func TestStreamServerInterceptor(t *testing.T) {
 	}
 
 	t.Run("Tests stream server interceptor", func(t *testing.T) {
-		got := extractStderr(t, func() {
+		got := testhelper.ExtractStderr(t, func() {
 			err := ssi(&stubProtoMessage{}, &stubServerStream{}, &grpc.StreamServerInfo{}, handler)
 
 			if err != nil && err.Error() != deniedErr.Error() {

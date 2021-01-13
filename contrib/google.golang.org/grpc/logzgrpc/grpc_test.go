@@ -1,15 +1,15 @@
 package logzgrpc_test
 
 import (
-	"bytes"
 	"context"
 	"net"
-	"os"
 	"strings"
 	"testing"
 
 	"github.com/glassonion1/logz"
 	"github.com/glassonion1/logz/contrib/google.golang.org/grpc/logzgrpc"
+	"github.com/glassonion1/logz/testhelper"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/interop"
 	pb "google.golang.org/grpc/interop/grpc_testing"
@@ -33,30 +33,103 @@ func serve(sOpt []grpc.ServerOption) *grpc.Server {
 	return s
 }
 
-func extractStderr(t *testing.T, fnc func()) string {
-	// Evacuates the stderr
-	orgStderr := os.Stderr
-	defer func() {
-		os.Stderr = orgStderr
-	}()
+func TestUnaryServerInterceptor_integration(t *testing.T) {
+	logz.InitTracer()
+	logz.SetProjectID("test-project")
 
-	// Overrides the stderr to the buffer.
-	r, w, _ := os.Pipe()
-	os.Stderr = w
-
-	fnc()
-
-	w.Close()
-
-	var buf bytes.Buffer
-	if _, err := buf.ReadFrom(r); err != nil {
-		t.Fatalf("failed to read buf: %v", err)
+	fn := func(
+		ctx context.Context,
+		req interface{},
+		info *grpc.UnaryServerInfo,
+		handler grpc.UnaryHandler,
+	) (interface{}, error) {
+		spanCtx := trace.SpanContextFromContext(ctx)
+		if spanCtx.TraceID.String() == "00000000000000000000000000000000" {
+			t.Error("trace id is zero value")
+		}
+		if spanCtx.SpanID.String() == "0000000000000000" {
+			t.Error("span id is zero value")
+		}
+		return handler(ctx, req)
 	}
 
-	return strings.TrimRight(buf.String(), "\n")
+	sOpt := []grpc.ServerOption{
+		grpc.ChainUnaryInterceptor(
+			logzgrpc.UnaryServerInterceptor("test1"),
+			fn,
+		),
+	}
+	s := serve(sOpt)
+	defer s.Stop()
+
+	ctx := context.Background()
+	dial := func(context.Context, string) (net.Conn, error) { return lis.Dial() }
+	conn, err := grpc.DialContext(
+		ctx,
+		"bufnet",
+		append([]grpc.DialOption{
+			grpc.WithContextDialer(dial),
+			grpc.WithInsecure(),
+		})...,
+	)
+	if err != nil {
+		t.Errorf("fialed to dial: %v", err)
+	}
+	defer conn.Close()
+
+	client := pb.NewTestServiceClient(conn)
+	interop.DoEmptyUnaryCall(client)
 }
 
-func TestInterceptors(t *testing.T) {
+func TestStreamServerInterceptor_integration(t *testing.T) {
+	logz.InitTracer()
+	logz.SetProjectID("test-project")
+
+	fn := func(
+		srv interface{},
+		stream grpc.ServerStream,
+		info *grpc.StreamServerInfo,
+		handler grpc.StreamHandler,
+	) error {
+		spanCtx := trace.SpanContextFromContext(stream.Context())
+		if spanCtx.TraceID.String() == "00000000000000000000000000000000" {
+			t.Error("trace id is zero value")
+		}
+		if spanCtx.SpanID.String() == "0000000000000000" {
+			t.Error("span id is zero value")
+		}
+		return handler(srv, stream)
+	}
+
+	sOpt := []grpc.ServerOption{
+		grpc.ChainStreamInterceptor(
+			logzgrpc.StreamServerInterceptor("test2"),
+			fn,
+		),
+	}
+	s := serve(sOpt)
+	defer s.Stop()
+
+	ctx := context.Background()
+	dial := func(context.Context, string) (net.Conn, error) { return lis.Dial() }
+	conn, err := grpc.DialContext(
+		ctx,
+		"bufnet",
+		append([]grpc.DialOption{
+			grpc.WithContextDialer(dial),
+			grpc.WithInsecure(),
+		})...,
+	)
+	if err != nil {
+		t.Errorf("fialed to dial: %v", err)
+	}
+	defer conn.Close()
+
+	client := pb.NewTestServiceClient(conn)
+	interop.DoServerStreaming(client)
+}
+
+func TestInterceptors_AccessLog(t *testing.T) {
 	logz.InitTracer()
 	logz.SetProjectID("test-project")
 
@@ -85,7 +158,7 @@ func TestInterceptors(t *testing.T) {
 	client := pb.NewTestServiceClient(conn)
 
 	t.Run("UnaryServerInterceptor", func(t *testing.T) {
-		got := extractStderr(t, func() {
+		got := testhelper.ExtractStderr(t, func() {
 			interop.DoEmptyUnaryCall(client)
 		})
 		if !strings.Contains(got, `"severity":"INFO"`) {
@@ -103,7 +176,7 @@ func TestInterceptors(t *testing.T) {
 	})
 
 	t.Run("StreamServerInterceptor", func(t *testing.T) {
-		got := extractStderr(t, func() {
+		got := testhelper.ExtractStderr(t, func() {
 			interop.DoServerStreaming(client)
 		})
 		if !strings.Contains(got, `"severity":"INFO"`) {
