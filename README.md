@@ -33,38 +33,7 @@ $ go get github.com/glassonion1/logz
 ```
 
 ## Usage
-
-```go
-package main
-
-import (
-    "log"
-    "net/http"
-
-    "github.com/glassonion1/logz"
-    "github.com/glassonion1/logz/middleware"
-)
-
-func main() {
-    mux := http.NewServeMux()
-    mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        ctx := r.Context()
-
-        // Writes info log
-        logz.Infof(ctx, "writes %s log", "info")
-    })
-
-    logz.SetProjectID("your gcp project id")
-    logz.InitTracer()
-    // Sets the middleware
-    h := middleware.NetHTTP("tracer name")(mux)
-
-    log.Fatal(http.ListenAndServe(":8080", h))
-}
-```
-
-### Recommended settings
-#### GAE
+### Google App Engine Standard
 ```go
 func main() {
     mux := http.NewServeMux()
@@ -85,7 +54,7 @@ func main() {
     log.Fatal(http.ListenAndServe(":8080", h))
 }
 ```
-#### Cloud Run
+### Cloud Run
 ```go
 func main() {
     mux := http.NewServeMux()
@@ -107,7 +76,7 @@ func main() {
     log.Fatal(http.ListenAndServe(":8080", h))
 }
 ```
-#### GKE
+### GKE
 ```go
 func main() {
     mux := http.NewServeMux()
