@@ -31,21 +31,21 @@ func TestUnaryServerInterceptor(t *testing.T) {
 	logz.SetProjectID("test-project")
 
 	usi := logzgrpc.UnaryServerInterceptor("test")
-	deniedErr := status.Error(codes.PermissionDenied, "PERMISSION_DENIED_TEXT")
+	internalErr := status.Error(codes.Internal, "INTERNAL_ERROR")
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return nil, deniedErr
+		return nil, internalErr
 	}
 
 	t.Run("Tests unary server interceptor", func(t *testing.T) {
 
 		got := testhelper.ExtractStderr(t, func() {
 			_, err := usi(context.Background(), &stubProtoMessage{}, &grpc.UnaryServerInfo{}, handler)
-			if err != nil && err.Error() != deniedErr.Error() {
+			if err != nil && err.Error() != internalErr.Error() {
 				t.Errorf("unexpected error occured: %s", err)
 			}
 		})
 
-		if !strings.Contains(got, `"severity":"INFO"`) {
+		if !strings.Contains(got, `"severity":"ERROR"`) {
 			t.Error("severity is not set correctly: error")
 		}
 
@@ -102,7 +102,7 @@ func TestStreamServerInterceptor(t *testing.T) {
 			}
 		})
 
-		if !strings.Contains(got, `"severity":"INFO"`) {
+		if !strings.Contains(got, `"severity":"WARNING"`) {
 			t.Error("severity is not set correctly: error")
 		}
 

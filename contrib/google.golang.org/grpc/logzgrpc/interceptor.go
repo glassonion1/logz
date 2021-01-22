@@ -1,12 +1,7 @@
 package logzgrpc
 
 import (
-	"bytes"
 	"context"
-	"encoding/binary"
-	"encoding/gob"
-	"fmt"
-	"strings"
 	"sync/atomic"
 	"time"
 
@@ -31,32 +26,6 @@ func (s *metadataSupplier) Get(key string) string {
 
 func (s *metadataSupplier) Set(key string, value string) {
 	s.metadata.Set(key, value)
-}
-
-func binarySize(val interface{}) int {
-	var buff bytes.Buffer
-	enc := gob.NewEncoder(&buff)
-	err := enc.Encode(val)
-	if err != nil {
-		return 0
-	}
-	return binary.Size(buff.Bytes())
-}
-
-func extractUAAndIP(md metadata.MD) (string, string) {
-	var ua string
-	if v, ok := md["x-forwarded-user-agent"]; ok {
-		ua = fmt.Sprintf("%v", v)
-	} else {
-		ua = fmt.Sprintf("%v", md["user-agent"])
-	}
-
-	var ip string
-	if v, ok := md["x-forwarded-for"]; ok && len(v) > 0 {
-		ips := strings.Split(v[0], ",")
-		ip = ips[0]
-	}
-	return ua, ip
 }
 
 // UnaryServerInterceptor returns a grpc.UnaryServerInterceptor suitable
@@ -87,7 +56,7 @@ func UnaryServerInterceptor(label string) grpc.UnaryServerInterceptor {
 			ua, ip := extractUAAndIP(md)
 			reqSize := binarySize(req)
 			resSize := binarySize(res)
-			code := int(status.Code(err))
+			code := httpStatusFromCode(status.Code(err))
 
 			logz.AccessLog(ctx, "gRPC Unary", info.FullMethod,
 				ua, ip, "HTTP/2",
@@ -162,7 +131,7 @@ func StreamServerInterceptor(label string) grpc.StreamServerInterceptor {
 			ua, ip := extractUAAndIP(md)
 			reqSize := int(wrapped.requestSize)
 			resSize := int(wrapped.responseSize)
-			code := int(status.Code(err))
+			code := httpStatusFromCode(status.Code(err))
 
 			logz.AccessLog(ctx, "gRPC Server Streaming", info.FullMethod,
 				ua, ip, "HTTP/2",

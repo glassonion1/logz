@@ -9,6 +9,8 @@ import (
 
 // ExtractStdout extracts string from stdout
 func ExtractStdout(t *testing.T, fnc func()) string {
+	t.Helper()
+
 	// Evacuates the stderr
 	orgStdout := os.Stdout
 	defer func() {
@@ -33,6 +35,8 @@ func ExtractStdout(t *testing.T, fnc func()) string {
 
 // ExtractStdout extracts string from stderr
 func ExtractStderr(t *testing.T, fnc func()) string {
+	t.Helper()
+
 	// Evacuates the stderr
 	orgStderr := os.Stderr
 	defer func() {
