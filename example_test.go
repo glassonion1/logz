@@ -35,8 +35,8 @@ func ExampleConfig() {
 	})
 
 	logz.SetConfig(logz.Config{
-		ProjectID:       "your gcp project id",
-		WritesAccessLog: false, // Whether or not to write the access log
+		ProjectID:      "your gcp project id",
+		NeedsAccessLog: false, // Whether or not to write the access log
 	})
 	logz.InitTracer()
 	// Sets the middleware

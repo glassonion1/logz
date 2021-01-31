@@ -3,8 +3,8 @@ package logz
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/glassonion1/logz/internal/config"
@@ -18,10 +18,6 @@ import (
 )
 
 func init() {
-	// In case of App Engine, the value can be obtained.
-	// Otherwise, it is an empty string.
-	config.ProjectID = os.Getenv("GOOGLE_CLOUD_PROJECT")
-
 	config.WriteAccessLog = logger.WriteAccessLog
 }
 
@@ -30,7 +26,11 @@ type Config struct {
 	// GCP Project ID
 	ProjectID string
 	// Whether or not to write the access log
-	WritesAccessLog bool
+	NeedsAccessLog bool
+	// Output for application log
+	ApplicationLogOut io.Writer
+	// Output for access log
+	AccessLogOut io.Writer
 }
 
 // SetProjectID sets gcp project id to the logger
@@ -39,12 +39,18 @@ func SetProjectID(projectID string) {
 }
 
 // SetConfig sets config to the logger
-func SetConfig(conf Config) {
-	if conf.ProjectID != "" {
-		config.ProjectID = conf.ProjectID
+func SetConfig(cfg Config) {
+	if cfg.ProjectID != "" {
+		config.ProjectID = cfg.ProjectID
 	}
-	if !conf.WritesAccessLog {
+	if !cfg.NeedsAccessLog {
 		config.WriteAccessLog = types.WriteEmptyAccessLog
+	}
+	if cfg.ApplicationLogOut != nil {
+		config.ApplicationLogOut = cfg.ApplicationLogOut
+	}
+	if cfg.AccessLogOut != nil {
+		config.AccessLogOut = cfg.AccessLogOut
 	}
 }
 

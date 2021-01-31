@@ -26,7 +26,7 @@ The format of application log is below
   "logging.googleapis.com/sourceLocation":{
     "file":"testutil.go",
     "line":"57",
-    "function":"github.com/glassonion1/logz.ExtractStdout"
+    "function":"github.com/glassonion1/logz.ExtractApplicationLogOut"
   },
   "logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000",
   "logging.googleapis.com/spanId":"0000000000000000",
@@ -43,12 +43,12 @@ func TestLoggerWriteApplicationLog(t *testing.T) {
 	config.ProjectID = "test"
 
 	t.Run("Tests WriteApplicationLog function", func(t *testing.T) {
-		got := testhelper.ExtractStdout(t, func() {
+		got := testhelper.ExtractApplicationLogOut(t, func() {
 			// tests the function
 			logger.WriteApplicationLog(ctx, severity.Info, "writes %s log", "info")
 		})
 
-		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"testhelper.go","line":"24","function":"github.com/glassonion1/logz/testhelper.ExtractStdout"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
+		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"testhelper.go","line":"22","function":"github.com/glassonion1/logz/testhelper.ExtractApplicationLogOut"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			t.Errorf("failed log info test: %v", diff)
@@ -94,7 +94,7 @@ func TestLoggerWriteAccessLog(t *testing.T) {
 
 	t.Run("Tests WriteAccessLog function", func(t *testing.T) {
 
-		got := testhelper.ExtractStderr(t, func() {
+		got := testhelper.ExtractAccessLogOut(t, func() {
 			// Tests the function
 			httpReq := httptest.NewRequest(http.MethodGet, "/test1", nil)
 			req := types.MakeHTTPRequest(*httpReq, 200, 333, time.Duration(100))

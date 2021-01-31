@@ -1,11 +1,11 @@
-# logz
+# Logz - yet another logger library for go
 
 ![CI for Pull Request](https://github.com/glassonion1/logz/workflows/CI%20for%20Pull%20Request/badge.svg)
 [![Godoc](https://img.shields.io/badge/godoc-reference-blue)](https://godoc.org/github.com/glassonion1/logz)
 [![Go Report Card](https://goreportcard.com/badge/github.com/glassonion1/logz)](https://goreportcard.com/report/github.com/glassonion1/logz)
 [![GitHub license](https://img.shields.io/github/license/glassonion1/logz)](https://github.com/glassonion1/logz/blob/main/LICENSE)
 
-The logz is logger library in Go for grouping application logs related a access log. logz uses OpenTelemetry([https://opentelemetry.io](https://opentelemetry.io)) to generate the trace id.  
+The logz is logger library for Go for grouping application logs related a access log. logz uses OpenTelemetry([https://opentelemetry.io](https://opentelemetry.io)) to generate the trace id.  
 This is for Google Cloud Logging (formerly known as Stackdriver Logging).  
 
 ![screenshot](https://github.com/glassonion1/logz/blob/main/img/screenshot.png "Cloug Logging")
@@ -45,7 +45,7 @@ func main() {
     })
 
     logz.SetConfig(logz.Config{
-        WritesAccessLog: true, // Writes the access log
+        NeedsAccessLog: true, // Writes the access log
     })
     logz.InitTracer()
     // Sets the middleware
@@ -67,7 +67,7 @@ func main() {
 
     logz.SetConfig(logz.Config{
         ProjectID:       "your gcp project id",
-        WritesAccessLog: false, // Writes no access log
+        NeedsAccessLog: false, // Writes no access log
     })
     logz.InitTracer()
     // Sets the middleware
@@ -89,7 +89,7 @@ func main() {
 
     logz.SetConfig(logz.Config{
         ProjectID:       "your gcp project id",
-        WritesAccessLog: true, // Writes the access log
+        NeedsAccessLog: true, // Writes the access log
     })
     logz.InitTracer()
     // Sets the middleware

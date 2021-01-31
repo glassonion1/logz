@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 	"runtime"
 	"strings"
 	"time"
@@ -54,7 +53,7 @@ func WriteApplicationLog(ctx context.Context, s severity.Severity, format string
 		TraceSampled:   sc.TraceSampled,
 	}
 
-	if err := json.NewEncoder(os.Stdout).Encode(ety); err != nil {
+	if err := json.NewEncoder(config.ApplicationLogOut).Encode(ety); err != nil {
 		fmt.Printf("failed to write log: %v", err)
 	}
 }
@@ -87,7 +86,7 @@ func WriteAccessLog(ctx context.Context, req types.HTTPRequest) {
 		HTTPRequest: req,
 	}
 
-	if err := json.NewEncoder(os.Stderr).Encode(ety); err != nil {
+	if err := json.NewEncoder(config.AccessLogOut).Encode(ety); err != nil {
 		fmt.Printf("failed to write log: %v", err)
 	}
 }

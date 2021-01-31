@@ -65,7 +65,7 @@ func TestNetHTTPMaxSeverity(t *testing.T) {
 		mid := middleware.NetHTTP("test/component")(mux)
 		rec := httptest.NewRecorder()
 
-		got := testhelper.ExtractStderr(t, func() {
+		got := testhelper.ExtractAccessLogOut(t, func() {
 			req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
 			mid.ServeHTTP(rec, req1)
 			req2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
@@ -107,7 +107,7 @@ func TestNetHTTPMaxSeverityNoLog(t *testing.T) {
 		mid := middleware.NetHTTP("test/component")(mux)
 		rec := httptest.NewRecorder()
 
-		got := testhelper.ExtractStderr(t, func() {
+		got := testhelper.ExtractAccessLogOut(t, func() {
 			req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
 			mid.ServeHTTP(rec, req1)
 			req2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
