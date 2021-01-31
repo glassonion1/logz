@@ -38,7 +38,7 @@ func TestUnaryServerInterceptor(t *testing.T) {
 
 	t.Run("Tests unary server interceptor", func(t *testing.T) {
 
-		got := testhelper.ExtractStderr(t, func() {
+		got := testhelper.ExtractAccessLogOut(t, func() {
 			_, err := usi(context.Background(), &stubProtoMessage{}, &grpc.UnaryServerInfo{}, handler)
 			if err != nil && err.Error() != internalErr.Error() {
 				t.Errorf("unexpected error occured: %s", err)
@@ -94,7 +94,7 @@ func TestStreamServerInterceptor(t *testing.T) {
 	}
 
 	t.Run("Tests stream server interceptor", func(t *testing.T) {
-		got := testhelper.ExtractStderr(t, func() {
+		got := testhelper.ExtractAccessLogOut(t, func() {
 			err := ssi(&stubProtoMessage{}, &stubServerStream{}, &grpc.StreamServerInfo{}, handler)
 
 			if err != nil && err.Error() != deniedErr.Error() {

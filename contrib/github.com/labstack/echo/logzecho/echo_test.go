@@ -1,7 +1,6 @@
 package logzecho_test
 
 import (
-	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/glassonion1/logz"
 	"github.com/glassonion1/logz/contrib/github.com/labstack/echo/logzecho"
+	"github.com/glassonion1/logz/testhelper"
 	"github.com/google/go-cmp/cmp"
 	"github.com/labstack/echo"
 	"go.opentelemetry.io/otel/trace"
@@ -60,57 +60,46 @@ func TestMiddlewareMaxSeverity(t *testing.T) {
 	t.Run("Tests logzecho integration", func(t *testing.T) {
 		t.Parallel()
 
-		// Overrides the stderr to the buffer.
-		r, w, _ := os.Pipe()
-		os.Stderr = w
+		got := testhelper.ExtractAccessLogOut(t, func() {
+			router := echo.New()
+			router.Use(logzecho.Middleware("foobar"))
+			router.GET("/test1", func(c echo.Context) error {
+				r := c.Request()
+				ctx := r.Context()
 
-		router := echo.New()
-		router.Use(logzecho.Middleware("foobar"))
-		router.GET("/test1", func(c echo.Context) error {
-			r := c.Request()
-			ctx := r.Context()
+				logz.Infof(ctx, "write %s log", "info")
+				logz.Errorf(ctx, "write %s log", "error")
 
-			logz.Infof(ctx, "write %s log", "info")
-			logz.Errorf(ctx, "write %s log", "error")
+				return c.NoContent(500)
+			})
+			router.GET("/test2", func(c echo.Context) error {
+				r := c.Request()
+				ctx := r.Context()
 
-			return c.NoContent(500)
+				logz.Debugf(ctx, "write %s log1", "debug")
+				logz.Debugf(ctx, "write %s log2", "debug")
+
+				return c.NoContent(200)
+			})
+			router.GET("/test3", func(c echo.Context) error {
+				r := c.Request()
+				ctx := r.Context()
+
+				logz.Warningf(ctx, "write %s log", "warning")
+
+				return c.NoContent(200)
+			})
+
+			rec := httptest.NewRecorder()
+
+			r1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
+			router.ServeHTTP(rec, r1)
+			r2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
+			router.ServeHTTP(rec, r2)
+			r3 := httptest.NewRequest(http.MethodGet, "/test3", nil)
+			router.ServeHTTP(rec, r3)
 		})
-		router.GET("/test2", func(c echo.Context) error {
-			r := c.Request()
-			ctx := r.Context()
 
-			logz.Debugf(ctx, "write %s log1", "debug")
-			logz.Debugf(ctx, "write %s log2", "debug")
-
-			return c.NoContent(200)
-		})
-		router.GET("/test3", func(c echo.Context) error {
-			r := c.Request()
-			ctx := r.Context()
-
-			logz.Warningf(ctx, "write %s log", "warning")
-
-			return c.NoContent(200)
-		})
-
-		rec := httptest.NewRecorder()
-
-		r1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
-		router.ServeHTTP(rec, r1)
-		r2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
-		router.ServeHTTP(rec, r2)
-		r3 := httptest.NewRequest(http.MethodGet, "/test3", nil)
-		router.ServeHTTP(rec, r3)
-
-		// Tests max severity of access log
-		w.Close()
-		var buf bytes.Buffer
-		if _, err := buf.ReadFrom(r); err != nil {
-			t.Fatalf("failed to read buf: %v", err)
-		}
-
-		// Gets the log from buffer.
-		got := buf.String()
 		if !strings.Contains(got, `"severity":"ERROR"`) {
 			t.Error("max severity is not set correctly")
 		}

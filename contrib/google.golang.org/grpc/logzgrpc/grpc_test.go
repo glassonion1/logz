@@ -158,7 +158,7 @@ func TestInterceptors_AccessLog(t *testing.T) {
 	client := pb.NewTestServiceClient(conn)
 
 	t.Run("UnaryServerInterceptor", func(t *testing.T) {
-		got := testhelper.ExtractStderr(t, func() {
+		got := testhelper.ExtractAccessLogOut(t, func() {
 			interop.DoEmptyUnaryCall(client)
 		})
 		if !strings.Contains(got, `"severity":"INFO"`) {
@@ -176,7 +176,7 @@ func TestInterceptors_AccessLog(t *testing.T) {
 	})
 
 	t.Run("StreamServerInterceptor", func(t *testing.T) {
-		got := testhelper.ExtractStderr(t, func() {
+		got := testhelper.ExtractAccessLogOut(t, func() {
 			interop.DoServerStreaming(client)
 		})
 		if !strings.Contains(got, `"severity":"INFO"`) {

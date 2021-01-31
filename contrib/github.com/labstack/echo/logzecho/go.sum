@@ -21,6 +21,8 @@ github.com/glassonion1/logz v0.3.6 h1:SL6O4mnpnQTfpPcvPLkq0csYQHx8/oaDMuUtE1xZvP
 github.com/glassonion1/logz v0.3.6/go.mod h1:VmDDoJvLkaHfnQZcTinMIiXtsJY6VUJO51sh0exIRjo=
 github.com/glassonion1/logz v0.3.7 h1:0pHR1vA91+wrULpHkmkpUUtDc55/FlQDA64SrtAeWNQ=
 github.com/glassonion1/logz v0.3.7/go.mod h1:DZwclIgZ+IdKfWraNdO8imOrtT9IVnO6Sq4eAXAtZ68=
+github.com/glassonion1/logz v0.3.8 h1:gASz0I9PlpvsRe915jiTDyrDhnf77j9xk3KDMxChU/c=
+github.com/glassonion1/logz v0.3.8/go.mod h1:DZwclIgZ+IdKfWraNdO8imOrtT9IVnO6Sq4eAXAtZ68=
 github.com/glassonion1/logz/contrib/github.com/gin-gonic/gin/logzgin v0.3.3/go.mod h1:A8Wz9YhbyEUYzbO0VM61S4pnI5DJBqorQraOOlPWHyI=
 github.com/glassonion1/logz/contrib/github.com/labstack/echo/logzecho v0.3.3/go.mod h1:9UN8Dhtc+WuwhA8H9wSl9rhCqlzJDbueFy8LIdxUiSE=
 github.com/glassonion1/logz/contrib/google.golang.org/grpc/logzgrpc v0.3.3/go.mod h1:NNDOeoxAUlsHW6ihWL+cGCEL5DTtuUnZSwRRJ98AXjI=
