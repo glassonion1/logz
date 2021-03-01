@@ -1,19 +1,24 @@
 package logz_test
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"context"
 
 	"github.com/glassonion1/logz"
+	"github.com/glassonion1/logz/internal/config"
+	"github.com/glassonion1/logz/internal/logger"
 	"github.com/glassonion1/logz/internal/spancontext"
 	"github.com/glassonion1/logz/middleware"
+	"github.com/glassonion1/logz/testhelper"
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestLogz(t *testing.T) {
+func TestLogzSpanContext(t *testing.T) {
 
 	logz.InitTracer()
 
@@ -105,4 +110,44 @@ func TestLogzRemoteParent(t *testing.T) {
 		rec1 := httptest.NewRecorder()
 		mid.ServeHTTP(rec1, req1)
 	})
+}
+
+func TestLogzWriteLog(t *testing.T) {
+
+	logz.InitTracer()
+
+	config.ProjectID = "test"
+	logger.NowFunc = func() time.Time {
+		return time.Date(2020, 12, 31, 23, 59, 59, 999999999, time.UTC)
+	}
+
+	t.Run("Tests logz integration", func(t *testing.T) {
+		t.Parallel()
+
+		mux := http.NewServeMux()
+		mux.Handle("/test1", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+
+			sc := spancontext.Extract(ctx)
+
+			got := testhelper.ExtractApplicationLogOut(t, func() {
+				logz.Infof(ctx, "writes %s log", "info")
+			})
+
+			expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logz_test.go","line":"134","function":"github.com/glassonion1/logz_test.TestLogzWriteLog.func2.1.1"},"logging.googleapis.com/trace":"projects/test/traces/%s","logging.googleapis.com/spanId":"%s","logging.googleapis.com/trace_sampled":true}`
+			expected = fmt.Sprintf(expected, sc.TraceID, sc.SpanID)
+
+			if diff := cmp.Diff(got, expected); diff != "" {
+				t.Errorf("failed log info test: %v", diff)
+			}
+
+		}))
+
+		mid := middleware.NetHTTP("test/component")(mux)
+		req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
+
+		rec1 := httptest.NewRecorder()
+		mid.ServeHTTP(rec1, req1)
+	})
+
 }

@@ -1,19 +1,19 @@
 package logger_test
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
 
-	"context"
+	"github.com/google/go-cmp/cmp"
 
 	"github.com/glassonion1/logz/internal/config"
 	"github.com/glassonion1/logz/internal/logger"
 	"github.com/glassonion1/logz/internal/severity"
 	"github.com/glassonion1/logz/internal/types"
 	"github.com/glassonion1/logz/testhelper"
-	"github.com/google/go-cmp/cmp"
 )
 
 /*
@@ -24,7 +24,7 @@ The format of application log is below
   "message":"writes info log",
   "time":"2020-12-31T23:59:59.999999999Z",
   "logging.googleapis.com/sourceLocation":{
-    "file":"testutil.go",
+    "file":"logger_test.go",
     "line":"57",
     "function":"github.com/glassonion1/logz.ExtractApplicationLogOut"
   },
@@ -41,6 +41,11 @@ func TestLoggerWriteApplicationLog(t *testing.T) {
 		return time.Date(2020, 12, 31, 23, 59, 59, 999999999, time.UTC)
 	}
 	config.ProjectID = "test"
+	config.CallerSkip = 1
+
+	defer func() {
+		config.CallerSkip = 0
+	}()
 
 	t.Run("Tests WriteApplicationLog function", func(t *testing.T) {
 		got := testhelper.ExtractApplicationLogOut(t, func() {
@@ -48,7 +53,7 @@ func TestLoggerWriteApplicationLog(t *testing.T) {
 			logger.WriteApplicationLog(ctx, severity.Info, "writes %s log", "info")
 		})
 
-		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"testhelper.go","line":"22","function":"github.com/glassonion1/logz/testhelper.ExtractApplicationLogOut"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
+		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logger_test.go","line":"51","function":"github.com/glassonion1/logz/internal/logger_test.TestLoggerWriteApplicationLog.func3"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			t.Errorf("failed log info test: %v", diff)

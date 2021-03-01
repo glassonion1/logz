@@ -25,6 +25,8 @@ func init() {
 type Config struct {
 	// GCP Project ID
 	ProjectID string
+	// CallerDepth is the number of stack frames to ascend
+	CallerSkip int
 	// Whether or not to write the access log
 	NeedsAccessLog bool
 	// Output for application log
@@ -43,6 +45,9 @@ func SetConfig(cfg Config) {
 	if cfg.ProjectID != "" {
 		config.ProjectID = cfg.ProjectID
 	}
+
+	config.CallerSkip = cfg.CallerSkip
+
 	if !cfg.NeedsAccessLog {
 		config.WriteAccessLog = types.WriteEmptyAccessLog
 	}

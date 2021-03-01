@@ -32,7 +32,7 @@ func WriteApplicationLog(ctx context.Context, s severity.Severity, format string
 
 	// Gets the source location
 	var location types.SourceLocation
-	if pc, file, line, ok := runtime.Caller(2); ok {
+	if pc, file, line, ok := runtime.Caller(2 + config.CallerSkip); ok {
 		if function := runtime.FuncForPC(pc); function != nil {
 			location.Function = function.Name()
 		}
