@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 	"runtime"
 	"strings"
 	"time"
@@ -26,7 +25,7 @@ func WriteApplicationLog(ctx context.Context, severity severity.Severity, format
 
 	// gets the source location
 	var location types.SourceLocation
-	if pc, file, line, ok := runtime.Caller(2); ok {
+	if pc, file, line, ok := runtime.Caller(2 + config.CallerSkip); ok {
 		if function := runtime.FuncForPC(pc); function != nil {
 			location.Function = function.Name()
 		}
@@ -47,7 +46,7 @@ func WriteApplicationLog(ctx context.Context, severity severity.Severity, format
 		TraceSampled:   sc.TraceSampled,
 	}
 
-	if err := json.NewEncoder(os.Stdout).Encode(ety); err != nil {
+	if err := json.NewEncoder(config.ApplicationLogOut).Encode(ety); err != nil {
 		fmt.Printf("failed to write log: %v", err)
 	}
 }

@@ -14,9 +14,6 @@ import (
 func TestHTTPMiddleware(t *testing.T) {
 
 	t.Run("Tests the middleware with remote parent", func(t *testing.T) {
-		defer func() {
-
-		}()
 
 		mux := http.NewServeMux()
 		mux.Handle("/test1", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
