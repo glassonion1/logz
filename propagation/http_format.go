@@ -25,17 +25,19 @@ var _ propagation.TextMapPropagator = &HTTPFormat{}
 func (hf HTTPFormat) Inject(ctx context.Context, carrier propagation.TextMapCarrier) {
 	sc := trace.SpanFromContext(ctx).SpanContext()
 
-	if !sc.TraceID.IsValid() || !sc.SpanID.IsValid() {
+	if !sc.TraceID().IsValid() || !sc.SpanID().IsValid() {
 		return
 	}
 
-	sid := binary.BigEndian.Uint64(sc.SpanID[:])
-	header := fmt.Sprintf("%s/%d;o=%d", sc.TraceID.String(), sid, sc.TraceFlags)
+	spanID := sc.SpanID()
+	sid := binary.BigEndian.Uint64(spanID[:])
+	header := fmt.Sprintf("%s/%d;o=%d", sc.TraceID().String(), sid, sc.TraceFlags())
 	carrier.Set(httpHeader, header)
 }
 
 // Extract extracts a context from the carrier if it contains HTTP headers.
 func (hf HTTPFormat) Extract(ctx context.Context, carrier propagation.TextMapCarrier) context.Context {
+
 	if h := carrier.Get(httpHeader); h != "" {
 		sc, err := extract(h)
 		if err == nil && sc.IsValid() {
@@ -61,7 +63,7 @@ func extract(h string) (trace.SpanContext, error) {
 		return sc, fmt.Errorf("failed to parse value: %w", err)
 	}
 
-	sc.TraceID = traceID
+	sc = sc.WithTraceID(traceID)
 
 	// Parse the span id field.
 	spanstr := h
@@ -73,20 +75,24 @@ func extract(h string) (trace.SpanContext, error) {
 	if err != nil {
 		return sc, fmt.Errorf("failed to parse value: %w", err)
 	}
-	binary.BigEndian.PutUint64(sc.SpanID[:], sid)
+	spanID := sc.SpanID()
+	binary.BigEndian.PutUint64(spanID[:], sid)
+	sc = sc.WithSpanID(spanID)
 
 	// Parse the options field, options field is optional.
 	if !strings.HasPrefix(h, "o=") {
 		return sc, errors.New("failed to parse value")
 	}
 
+	var sampled byte
 	if h[2:] == "1" {
-		sc.TraceFlags = trace.FlagsSampled
+		sampled = trace.FlagsSampled
 	} else if h[2:] == "2" {
-		sc.TraceFlags = trace.FlagsDeferred
+		sampled = trace.FlagsDeferred
 	} else if h[2:] == "4" {
-		sc.TraceFlags = trace.FlagsDebug
+		sampled = trace.FlagsDebug
 	}
+	sc = sc.WithTraceFlags(sampled)
 
 	return sc, nil
 }

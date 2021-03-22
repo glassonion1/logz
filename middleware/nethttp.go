@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 
 	"github.com/glassonion1/logz"
 	"github.com/glassonion1/logz/writer"
@@ -20,7 +21,7 @@ func NetHTTP(label string) func(http.Handler) http.Handler {
 			tracer := otel.Tracer(label)
 
 			prop := otel.GetTextMapPropagator()
-			ctx := prop.Extract(r.Context(), r.Header)
+			ctx := prop.Extract(r.Context(), propagation.HeaderCarrier(r.Header))
 
 			ctx, span := tracer.Start(ctx, r.URL.String())
 			ctx = logz.StartCollectingSeverity(ctx)
