@@ -44,10 +44,10 @@ func TestUnaryServerInterceptor_integration(t *testing.T) {
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 		spanCtx := trace.SpanContextFromContext(ctx)
-		if spanCtx.TraceID.String() == "00000000000000000000000000000000" {
+		if spanCtx.TraceID().String() == "00000000000000000000000000000000" {
 			t.Error("trace id is zero value")
 		}
-		if spanCtx.SpanID.String() == "0000000000000000" {
+		if spanCtx.SpanID().String() == "0000000000000000" {
 			t.Error("span id is zero value")
 		}
 		return handler(ctx, req)
@@ -92,10 +92,10 @@ func TestStreamServerInterceptor_integration(t *testing.T) {
 		handler grpc.StreamHandler,
 	) error {
 		spanCtx := trace.SpanContextFromContext(stream.Context())
-		if spanCtx.TraceID.String() == "00000000000000000000000000000000" {
+		if spanCtx.TraceID().String() == "00000000000000000000000000000000" {
 			t.Error("trace id is zero value")
 		}
-		if spanCtx.SpanID.String() == "0000000000000000" {
+		if spanCtx.SpanID().String() == "0000000000000000" {
 			t.Error("span id is zero value")
 		}
 		return handler(srv, stream)
@@ -170,7 +170,7 @@ func TestInterceptors_AccessLog(t *testing.T) {
 		if !strings.Contains(got, `"httpRequest":{"requestMethod":"gRPC Unary"`) {
 			t.Error("http request is not set correctly: error")
 		}
-		if !strings.Contains(got, `"userAgent":"[grpc-go/1.34.0]"`) {
+		if !strings.Contains(got, `"userAgent":"[grpc-go/1.35.1]"`) {
 			t.Error("user agent is not set correctly: error")
 		}
 	})
@@ -188,7 +188,7 @@ func TestInterceptors_AccessLog(t *testing.T) {
 		if !strings.Contains(got, `"httpRequest":{"requestMethod":"gRPC Server Streaming"`) {
 			t.Error("http request is not set correctly: error")
 		}
-		if !strings.Contains(got, `"userAgent":"[grpc-go/1.34.0]"`) {
+		if !strings.Contains(got, `"userAgent":"[grpc-go/1.35.1]"`) {
 			t.Error("user agent is not set correctly: error")
 		}
 	})
