@@ -16,6 +16,7 @@ type metadataSupplier struct {
 	metadata *metadata.MD
 }
 
+// Get returns the value associated with the passed key.
 func (s *metadataSupplier) Get(key string) string {
 	values := s.metadata.Get(key)
 	if len(values) == 0 {
@@ -24,8 +25,19 @@ func (s *metadataSupplier) Get(key string) string {
 	return values[0]
 }
 
+// Set stores the key-value pair.
 func (s *metadataSupplier) Set(key string, value string) {
 	s.metadata.Set(key, value)
+}
+
+// Keys lists the keys stored in this carrier.
+func (s *metadataSupplier) Keys() []string {
+	keys := make([]string, 0, s.metadata.Len())
+	md := *s.metadata
+	for k := range md {
+		keys = append(keys, k)
+	}
+	return keys
 }
 
 // UnaryServerInterceptor returns a grpc.UnaryServerInterceptor suitable

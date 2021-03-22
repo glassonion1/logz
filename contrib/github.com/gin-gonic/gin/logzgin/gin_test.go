@@ -31,10 +31,10 @@ func TestMiddleware(t *testing.T) {
 
 			sc := trace.SpanContextFromContext(ctx)
 
-			if diff := cmp.Diff(sc.TraceID.String(), "a0d3eee13de6a4bbcf291eb444b94f28"); diff != "" {
+			if diff := cmp.Diff(sc.TraceID().String(), "a0d3eee13de6a4bbcf291eb444b94f28"); diff != "" {
 				t.Errorf("remote and current trace id are missmatch: %v", diff)
 			}
-			if sc.SpanID.String() == "0000000000000000" {
+			if sc.SpanID().String() == "0000000000000000" {
 				t.Error("span id is zero value")
 			}
 		})

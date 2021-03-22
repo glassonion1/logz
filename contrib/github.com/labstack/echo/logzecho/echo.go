@@ -4,8 +4,9 @@ import (
 	"time"
 
 	"github.com/glassonion1/logz"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 // Middleware is middleware for HTTP handler
@@ -20,7 +21,7 @@ func Middleware(label string) echo.MiddlewareFunc {
 			r := c.Request()
 
 			prop := otel.GetTextMapPropagator()
-			ctx := prop.Extract(r.Context(), r.Header)
+			ctx := prop.Extract(r.Context(), propagation.HeaderCarrier(r.Header))
 
 			ctx, span := tracer.Start(ctx, r.URL.String())
 			ctx = logz.StartCollectingSeverity(ctx)
