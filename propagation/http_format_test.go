@@ -10,6 +10,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/glassonion1/logz/propagation"
+	prop "go.opentelemetry.io/otel/propagation"
 )
 
 func TestHTTPFormatInject(t *testing.T) {
@@ -21,7 +22,7 @@ func TestHTTPFormatInject(t *testing.T) {
 
 	// Tests the inject funcation
 	hf := propagation.HTTPFormat{}
-	hf.Inject(ctx, &req1.Header)
+	hf.Inject(ctx, prop.HeaderCarrier(req1.Header))
 
 	want := "00000000000000020000000000000000/2;o=0"
 	got := req1.Header.Get("X-Cloud-Trace-Context")
@@ -37,19 +38,19 @@ func TestHTTPFormatExtract(t *testing.T) {
 
 	// Tests the extract funcation
 	hf := propagation.HTTPFormat{}
-	ctx := hf.Extract(context.Background(), req1.Header)
+	ctx := hf.Extract(context.Background(), prop.HeaderCarrier(req1.Header))
 
 	sc := trace.RemoteSpanContextFromContext(ctx)
 
-	if diff := cmp.Diff(sc.TraceID.String(), "a0d3eee13de6a4bbcf291eb444b94f28"); diff != "" {
+	if diff := cmp.Diff(sc.TraceID().String(), "a0d3eee13de6a4bbcf291eb444b94f28"); diff != "" {
 		t.Errorf("failed to traceid test: %v", diff)
 	}
 
-	if diff := cmp.Diff(sc.SpanID.String(), "00000000000003e7"); diff != "" {
+	if diff := cmp.Diff(sc.SpanID().String(), "00000000000003e7"); diff != "" {
 		t.Errorf("failed to spanid test: %v", diff)
 	}
 
-	if sc.TraceFlags != trace.FlagsSampled {
+	if sc.TraceFlags() != trace.FlagsSampled {
 		t.Errorf("failed to trace flag test")
 	}
 }
