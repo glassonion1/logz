@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/glassonion1/logz"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 // Middleware is middleware for HTTP handler
@@ -19,7 +20,7 @@ func Middleware(label string) gin.HandlerFunc {
 		r := c.Request
 
 		prop := otel.GetTextMapPropagator()
-		ctx := prop.Extract(r.Context(), r.Header)
+		ctx := prop.Extract(r.Context(), propagation.HeaderCarrier(r.Header))
 
 		ctx, span := tracer.Start(ctx, r.URL.String())
 		ctx = logz.StartCollectingSeverity(ctx)
