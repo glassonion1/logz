@@ -41,9 +41,21 @@ func httpStatusFromCode(code codes.Code) int {
 }
 
 func binarySize(val interface{}) int {
+	if val == nil {
+		return 0
+	}
+
+	r := reflect.ValueOf(val)
+	switch r.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Map, reflect.Ptr, reflect.Slice: // nilable types
+		if r.IsNil() {
+			return 0
+		}
+	}
+
 	var buff bytes.Buffer
 	enc := gob.NewEncoder(&buff)
-	err := enc.Encode(val)
+	err := enc.EncodeValue(r)
 	if err != nil {
 		return 0
 	}
