@@ -170,7 +170,7 @@ func TestInterceptors_AccessLog(t *testing.T) {
 		if !strings.Contains(got, `"httpRequest":{"requestMethod":"gRPC Unary"`) {
 			t.Error("http request is not set correctly: error")
 		}
-		if !strings.Contains(got, `"userAgent":"[grpc-go/1.35.1]"`) {
+		if !strings.Contains(got, `"userAgent":"[grpc-go/1.39.0]"`) {
 			t.Error("user agent is not set correctly: error")
 		}
 	})
@@ -188,7 +188,7 @@ func TestInterceptors_AccessLog(t *testing.T) {
 		if !strings.Contains(got, `"httpRequest":{"requestMethod":"gRPC Server Streaming"`) {
 			t.Error("http request is not set correctly: error")
 		}
-		if !strings.Contains(got, `"userAgent":"[grpc-go/1.35.1]"`) {
+		if !strings.Contains(got, `"userAgent":"[grpc-go/1.39.0]"`) {
 			t.Error("user agent is not set correctly: error")
 		}
 	})
