@@ -84,15 +84,9 @@ func extract(h string) (trace.SpanContext, error) {
 		return sc, errors.New("failed to parse value")
 	}
 
-	var sampled byte
 	if h[2:] == "1" {
-		sampled = trace.FlagsSampled
-	} else if h[2:] == "2" {
-		sampled = trace.FlagsDeferred
-	} else if h[2:] == "4" {
-		sampled = trace.FlagsDebug
+		sc = sc.WithTraceFlags(trace.FlagsSampled)
 	}
-	sc = sc.WithTraceFlags(sampled)
 
 	return sc, nil
 }

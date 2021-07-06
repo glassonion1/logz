@@ -40,7 +40,7 @@ func TestHTTPFormatExtract(t *testing.T) {
 	hf := propagation.HTTPFormat{}
 	ctx := hf.Extract(context.Background(), prop.HeaderCarrier(req1.Header))
 
-	sc := trace.RemoteSpanContextFromContext(ctx)
+	sc := trace.SpanContextFromContext(ctx)
 
 	if diff := cmp.Diff(sc.TraceID().String(), "a0d3eee13de6a4bbcf291eb444b94f28"); diff != "" {
 		t.Errorf("failed to traceid test: %v", diff)
