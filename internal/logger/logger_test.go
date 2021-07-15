@@ -18,6 +18,53 @@ import (
 
 /*
 Tests logger functions.
+The format of structured application log is below
+{
+  "severity":"INFO",
+	"jsonPayload": {
+		"value": "blah blah blah"
+	},
+  "time":"2020-12-31T23:59:59.999999999Z",
+  "logging.googleapis.com/sourceLocation":{
+    "file":"logger_test.go",
+    "line":"57",
+    "function":"github.com/glassonion1/logz.ExtractApplicationLogOut"
+  },
+  "logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000",
+  "logging.googleapis.com/spanId":"0000000000000000",
+  "logging.googleapis.com/trace_sampled":false
+}
+*/
+func TestLoggerWriteStructuredApplicationLog(t *testing.T) {
+
+	ctx := context.Background()
+
+	logger.NowFunc = func() time.Time {
+		return time.Date(2020, 12, 31, 23, 59, 59, 999999999, time.UTC)
+	}
+	config.ProjectID = "test"
+	config.CallerSkip = 1
+
+	defer func() {
+		config.CallerSkip = 0
+	}()
+
+	t.Run("Tests WriteStructuredApplicationLog function", func(t *testing.T) {
+		got := testhelper.ExtractApplicationLogOut(t, func() {
+			// tests the function
+			logger.WriteStructuredApplicationLog(ctx, severity.Info, map[string]string{"foo": "bar"})
+		})
+
+		expected := `{"severity":"INFO","message":{"foo":"bar"},"time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logger_test.go","line":"53","function":"github.com/glassonion1/logz/internal/logger_test.TestLoggerWriteStructuredApplicationLog.func3"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
+
+		if diff := cmp.Diff(got, expected); diff != "" {
+			t.Errorf("failed log info test: %v", diff)
+		}
+	})
+}
+
+/*
+Tests logger functions.
 The format of application log is below
 {
   "severity":"INFO",
@@ -53,7 +100,7 @@ func TestLoggerWriteApplicationLog(t *testing.T) {
 			logger.WriteApplicationLog(ctx, severity.Info, "writes %s log", "info")
 		})
 
-		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logger_test.go","line":"51","function":"github.com/glassonion1/logz/internal/logger_test.TestLoggerWriteApplicationLog.func3"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
+		expected := `{"severity":"INFO","message":"writes info log","time":"2020-12-31T23:59:59.999999999Z","logging.googleapis.com/sourceLocation":{"file":"logger_test.go","line":"98","function":"github.com/glassonion1/logz/internal/logger_test.TestLoggerWriteApplicationLog.func3"},"logging.googleapis.com/trace":"projects/test/traces/00000000000000000000000000000000","logging.googleapis.com/spanId":"0000000000000000","logging.googleapis.com/trace_sampled":false}`
 
 		if diff := cmp.Diff(got, expected); diff != "" {
 			t.Errorf("failed log info test: %v", diff)

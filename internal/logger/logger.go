@@ -19,8 +19,7 @@ var NowFunc = time.Now
 
 const traceFmt = "projects/%s/traces/%s"
 
-// WriteApplicationLog writes an application log to stdout
-func WriteApplicationLog(ctx context.Context, s severity.Severity, format string, a ...interface{}) {
+func writeAppLog(ctx context.Context, s severity.Severity, payload interface{}) {
 	// Add a severity to the ContextSeverity
 	cs := severity.GetContextSeverity(ctx)
 	if cs != nil {
@@ -32,7 +31,7 @@ func WriteApplicationLog(ctx context.Context, s severity.Severity, format string
 
 	// Gets the source location
 	var location types.SourceLocation
-	if pc, file, line, ok := runtime.Caller(2 + config.CallerSkip); ok {
+	if pc, file, line, ok := runtime.Caller(3 + config.CallerSkip); ok {
 		if function := runtime.FuncForPC(pc); function != nil {
 			location.Function = function.Name()
 		}
@@ -42,10 +41,9 @@ func WriteApplicationLog(ctx context.Context, s severity.Severity, format string
 	}
 
 	trace := fmt.Sprintf(traceFmt, config.ProjectID, sc.TraceID)
-	msg := fmt.Sprintf(format, a...)
 	ety := &types.ApplicationLog{
 		Severity:       s.String(),
-		Message:        msg,
+		Message:        payload,
 		Time:           NowFunc(),
 		SourceLocation: location,
 		Trace:          trace,
@@ -56,6 +54,16 @@ func WriteApplicationLog(ctx context.Context, s severity.Severity, format string
 	if err := json.NewEncoder(config.ApplicationLogOut).Encode(ety); err != nil {
 		fmt.Printf("failed to write log: %v", err)
 	}
+}
+
+// WriteStructuredApplicationLog writes an structured application log to stdout
+func WriteStructuredApplicationLog(ctx context.Context, s severity.Severity, payload interface{}) {
+	writeAppLog(ctx, s, payload)
+}
+
+// WriteApplicationLog writes an application log to stdout
+func WriteApplicationLog(ctx context.Context, s severity.Severity, format string, a ...interface{}) {
+	writeAppLog(ctx, s, fmt.Sprintf(format, a...))
 }
 
 // WriteAccessLog writes a access log to stderr
