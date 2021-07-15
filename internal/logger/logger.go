@@ -19,7 +19,7 @@ var NowFunc = time.Now
 
 const traceFmt = "projects/%s/traces/%s"
 
-// WriteApplicationLog writes a application log to stdout
+// WriteApplicationLog writes an application log to stdout
 func WriteApplicationLog(ctx context.Context, s severity.Severity, format string, a ...interface{}) {
 	// Add a severity to the ContextSeverity
 	cs := severity.GetContextSeverity(ctx)
