@@ -59,6 +59,31 @@ func SetConfig(cfg Config) {
 	}
 }
 
+// DebugStructured writes structured debug log to the stdout
+func DebugStructured(ctx context.Context, payload interface{}) {
+	logger.WriteStructuredApplicationLog(ctx, severity.Debug, payload)
+}
+
+// InfoStructured writes structured info log to the stdout
+func InfoStructured(ctx context.Context, payload interface{}) {
+	logger.WriteStructuredApplicationLog(ctx, severity.Info, payload)
+}
+
+// WarningStructured writes structured warning log to the stdout
+func WarningStructured(ctx context.Context, payload interface{}) {
+	logger.WriteStructuredApplicationLog(ctx, severity.Warning, payload)
+}
+
+// ErrorStructured writes structured error log to the stdout
+func ErrorStructured(ctx context.Context, payload interface{}) {
+	logger.WriteStructuredApplicationLog(ctx, severity.Error, payload)
+}
+
+// CriticalStructured writes structured critical log to the stdout
+func CriticalStructured(ctx context.Context, payload interface{}) {
+	logger.WriteStructuredApplicationLog(ctx, severity.Critical, payload)
+}
+
 // Debugf writes debug log to the stdout
 func Debugf(ctx context.Context, format string, a ...interface{}) {
 	logger.WriteApplicationLog(ctx, severity.Debug, format, a...)
