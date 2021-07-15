@@ -15,10 +15,10 @@ type WriteAccessLogFunc func(ctx context.Context, req HTTPRequest)
 // WriteEmptyAccessLog writes empty log
 var WriteEmptyAccessLog = func(context.Context, HTTPRequest) {}
 
-// ApplicationLog is a log written by the developer by any timing
+// ApplicationLog is a structured log written by the developer by any timing
 type ApplicationLog struct {
 	Severity       string         `json:"severity"`
-	Message        string         `json:"message"`
+	Message        interface{}    `json:"message"`
 	Time           time.Time      `json:"time"`
 	SourceLocation SourceLocation `json:"logging.googleapis.com/sourceLocation"`
 	Trace          string         `json:"logging.googleapis.com/trace"`
