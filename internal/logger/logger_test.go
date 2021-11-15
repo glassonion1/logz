@@ -48,7 +48,7 @@ func TestLoggerWriteApplicationLog(t *testing.T) {
 	}()
 
 	t.Run("Tests WriteApplicationLog function", func(t *testing.T) {
-		got := testhelper.ExtractApplicationLogOut(t, func() {
+		got := testhelper.ExtractApplicationLogOut(t, ctx, func(ctx context.Context) {
 			// tests the function
 			logger.WriteApplicationLog(ctx, severity.Info, "writes %s log", "info")
 		})
@@ -99,7 +99,7 @@ func TestLoggerWriteAccessLog(t *testing.T) {
 
 	t.Run("Tests WriteAccessLog function", func(t *testing.T) {
 
-		got := testhelper.ExtractAccessLogOut(t, func() {
+		got := testhelper.ExtractAccessLogOut(t, ctx, func(ctx context.Context) {
 			// Tests the function
 			httpReq := httptest.NewRequest(http.MethodGet, "/test1", nil)
 			req := types.MakeHTTPRequest(*httpReq, 200, 333, time.Duration(100))
@@ -112,4 +112,5 @@ func TestLoggerWriteAccessLog(t *testing.T) {
 			t.Errorf("failed log info test: %v", diff)
 		}
 	})
+
 }

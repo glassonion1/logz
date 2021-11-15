@@ -2,7 +2,8 @@ package testhelper
 
 import (
 	"bytes"
-	"os"
+	"context"
+	"io"
 	"strings"
 	"testing"
 
@@ -10,31 +11,41 @@ import (
 )
 
 // ExtractStdout extracts string from stdout
-func ExtractApplicationLogOut(t *testing.T, fnc func()) string {
+func ExtractApplicationLogOut(t *testing.T, ctx context.Context, fnc func(ctx context.Context)) string {
 	t.Helper()
 
 	var buf bytes.Buffer
-	config.ApplicationLogOut = &buf
-	defer func() {
-		config.ApplicationLogOut = os.Stdout
-	}()
-
-	fnc()
+	if cc := config.GetContextConfig(ctx); cc != nil {
+		cc.ApplicationLogOut = &buf
+	} else {
+		ctx = config.SetContextConfig(ctx, &config.ContextConfig{ApplicationLogOut: &buf})
+	}
+	fnc(ctx)
 
 	return strings.TrimRight(buf.String(), "\n")
 }
 
 // ExtractStdout extracts string from stderr
-func ExtractAccessLogOut(t *testing.T, fnc func()) string {
+func ExtractAccessLogOut(t *testing.T, ctx context.Context, fnc func(ctx context.Context)) string {
 	t.Helper()
 
 	var buf bytes.Buffer
-	config.AccessLogOut = &buf
-	defer func() {
-		config.AccessLogOut = os.Stdout
-	}()
+	if cc := config.GetContextConfig(ctx); cc != nil {
+		cc.AccessLogOut = &buf
+	} else {
+		ctx = config.SetContextConfig(ctx, &config.ContextConfig{AccessLogOut: &buf})
+	}
 
-	fnc()
+	fnc(ctx)
 
 	return strings.TrimRight(buf.String(), "\n")
+}
+
+// OverrideLogOutContext override log I/O in the context
+func OverrideLogOutContext(t *testing.T, ctx context.Context, appLogOut, accessLogOut io.Writer) context.Context {
+	t.Helper()
+	return config.SetContextConfig(ctx, &config.ContextConfig{
+		ApplicationLogOut: appLogOut,
+		AccessLogOut:      accessLogOut,
+	})
 }
