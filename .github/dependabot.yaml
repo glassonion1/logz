@@ -1,0 +1,22 @@
+version: 2
+updates:
+- package-ecosystem: github-actions
+  directory: /
+  schedule:
+    interval: weekly
+- package-ecosystem: gomod
+  directory: /
+  schedule:
+    interval: weekly
+- package-ecosystem: gomod
+  directory: /contrib/github.com/gin-gonic/gin/logzgin/
+  schedule:
+    interval: weekly
+- package-ecosystem: gomod
+  directory: /contrib/github.com/labstack/echo/logzecho/
+  schedule:
+    interval: weekly
+- package-ecosystem: gomod
+  directory: /contrib/google.golang.org/grpc/logzgrpc/
+  schedule:
+    interval: weekly
