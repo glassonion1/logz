@@ -3,20 +3,20 @@ updates:
 - package-ecosystem: github-actions
   directory: /
   schedule:
-    interval: daily
+    interval: weekly
 - package-ecosystem: gomod
   directory: /
   schedule:
-    interval: daily
+    interval: weekly
 - package-ecosystem: gomod
   directory: /contrib/github.com/gin-gonic/gin/logzgin/
   schedule:
-    interval: daily
+    interval: weekly
 - package-ecosystem: gomod
   directory: /contrib/github.com/labstack/echo/logzecho/
   schedule:
-    interval: daily
+    interval: weekly
 - package-ecosystem: gomod
   directory: /contrib/google.golang.org/grpc/logzgrpc/
   schedule:
-    interval: daily
+    interval: weekly
