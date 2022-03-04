@@ -3,10 +3,12 @@ package propagation_test
 import (
 	"context"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"go.opentelemetry.io/otel/oteltest"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/glassonion1/logz/propagation"
@@ -15,8 +17,12 @@ import (
 
 func TestHTTPFormatInject(t *testing.T) {
 
-	mockTracer := oteltest.DefaultTracer()
-	ctx, _ := mockTracer.Start(context.Background(), "inject")
+	sr := tracetest.NewSpanRecorder()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	mockTracer := tp.Tracer("inject")
+
+	ctx, span := mockTracer.Start(context.Background(), "inject")
+	defer span.End()
 
 	req1 := httptest.NewRequest("GET", "http://example.com", nil)
 
@@ -24,10 +30,10 @@ func TestHTTPFormatInject(t *testing.T) {
 	hf := propagation.HTTPFormat{}
 	hf.Inject(ctx, prop.HeaderCarrier(req1.Header))
 
-	want := "00000000000000020000000000000000/2;o=0"
 	got := req1.Header.Get("X-Cloud-Trace-Context")
-	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("failed to inject test: %v", diff)
+	traceID := span.SpanContext().TraceID().String()
+	if !strings.Contains(got, traceID) {
+		t.Errorf("failed to inject test. got: %s, expected: %s", got, traceID)
 	}
 }
 
