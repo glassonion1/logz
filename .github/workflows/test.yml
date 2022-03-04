@@ -36,7 +36,7 @@ jobs:
     needs: [lint, test]
     steps:
       - name: Set Check Status Success
-        uses: Sibz/github-status-action@v1.1.1
+        uses: Sibz/github-status-action@v1.1.6
         with:
           context: test-status
           authToken: ${{ secrets.GITHUB_TOKEN }}
