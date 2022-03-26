@@ -4,14 +4,14 @@ go 1.17
 
 require (
 	github.com/glassonion1/logz v0.3.12
-	go.opentelemetry.io/otel v1.4.1
-	go.opentelemetry.io/otel/trace v1.4.1
+	go.opentelemetry.io/otel v1.6.0
+	go.opentelemetry.io/otel/trace v1.6.0
 	google.golang.org/grpc v1.45.0
 )
 
 require (
 	cloud.google.com/go v0.34.0 // indirect
-	github.com/go-logr/logr v1.2.2 // indirect
+	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	go.opentelemetry.io/otel/sdk v1.4.1 // indirect
