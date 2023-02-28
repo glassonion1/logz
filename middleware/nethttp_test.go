@@ -1,6 +1,7 @@
 package middleware_test
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -65,13 +66,13 @@ func TestNetHTTPMaxSeverity(t *testing.T) {
 		mid := middleware.NetHTTP("test/component")(mux)
 		rec := httptest.NewRecorder()
 
-		got := testhelper.ExtractAccessLogOut(t, func() {
+		got := testhelper.ExtractAccessLogOut(t, context.Background(), func(ctx context.Context) {
 			req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
-			mid.ServeHTTP(rec, req1)
+			mid.ServeHTTP(rec, req1.WithContext(ctx))
 			req2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
-			mid.ServeHTTP(rec, req2)
+			mid.ServeHTTP(rec, req2.WithContext(ctx))
 			req3 := httptest.NewRequest(http.MethodGet, "/test3", nil)
-			mid.ServeHTTP(rec, req3)
+			mid.ServeHTTP(rec, req3.WithContext(ctx))
 		})
 
 		if !strings.Contains(got, `"severity":"ERROR"`) {
@@ -107,13 +108,13 @@ func TestNetHTTPMaxSeverityNoLog(t *testing.T) {
 		mid := middleware.NetHTTP("test/component")(mux)
 		rec := httptest.NewRecorder()
 
-		got := testhelper.ExtractAccessLogOut(t, func() {
+		got := testhelper.ExtractAccessLogOut(t, context.Background(), func(ctx context.Context) {
 			req1 := httptest.NewRequest(http.MethodGet, "/test1", nil)
-			mid.ServeHTTP(rec, req1)
+			mid.ServeHTTP(rec, req1.WithContext(ctx))
 			req2 := httptest.NewRequest(http.MethodGet, "/test2", nil)
-			mid.ServeHTTP(rec, req2)
+			mid.ServeHTTP(rec, req2.WithContext(ctx))
 			req3 := httptest.NewRequest(http.MethodGet, "/test3", nil)
-			mid.ServeHTTP(rec, req3)
+			mid.ServeHTTP(rec, req3.WithContext(ctx))
 		})
 
 		if !strings.Contains(got, `"severity":"ERROR"`) {

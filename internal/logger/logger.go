@@ -53,7 +53,12 @@ func WriteApplicationLog(ctx context.Context, s severity.Severity, format string
 		TraceSampled:   sc.TraceSampled,
 	}
 
-	if err := json.NewEncoder(config.ApplicationLogOut).Encode(ety); err != nil {
+	w := config.ApplicationLogOut
+	if cc := config.GetContextConfig(ctx); cc != nil && cc.ApplicationLogOut != nil {
+		w = cc.ApplicationLogOut
+	}
+
+	if err := json.NewEncoder(w).Encode(ety); err != nil {
 		fmt.Printf("failed to write log: %v", err)
 	}
 }
@@ -86,7 +91,12 @@ func WriteAccessLog(ctx context.Context, req types.HTTPRequest) {
 		HTTPRequest: req,
 	}
 
-	if err := json.NewEncoder(config.AccessLogOut).Encode(ety); err != nil {
+	w := config.AccessLogOut
+	if cc := config.GetContextConfig(ctx); cc != nil && cc.AccessLogOut != nil {
+		w = cc.AccessLogOut
+	}
+
+	if err := json.NewEncoder(w).Encode(ety); err != nil {
 		fmt.Printf("failed to write log: %v", err)
 	}
 }

@@ -130,7 +130,7 @@ func TestLogzWriteLog(t *testing.T) {
 
 			sc := spancontext.Extract(ctx)
 
-			got := testhelper.ExtractApplicationLogOut(t, func() {
+			got := testhelper.ExtractApplicationLogOut(t, ctx, func(ctx context.Context) {
 				logz.Infof(ctx, "writes %s log", "info")
 			})
 
