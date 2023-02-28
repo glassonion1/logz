@@ -13,9 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3.2.0
+        uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.32
+          version: v1.38.0
   test:
     name: Test local sources
     strategy:
@@ -27,7 +27,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
-          go-version: 1.15
+          go-version: 1.20
       - name: Test Go
         run: go test -race ./...
   test-status:
